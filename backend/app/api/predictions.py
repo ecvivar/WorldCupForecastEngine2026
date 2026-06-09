@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
 
 from app.core.cache_decorator import cached
 from app.core.dependencies import PaginationParams, get_db
+from app.core.rate_limit import limiter
 from app.schemas.match import MatchPrediction
 from app.schemas.ranking import IGFScoreResponse
 from app.services.match_service import MatchService
@@ -13,7 +14,9 @@ router = APIRouter(prefix="/predictions", tags=["Predictions"])
 
 @router.get("", response_model=list[MatchPrediction])
 @cached("predictions:list")
+@limiter.limit("10/minute")
 def list_predictions(
+    request: Request,
     pagination: PaginationParams = Depends(),
     db: Session = Depends(get_db),
 ):

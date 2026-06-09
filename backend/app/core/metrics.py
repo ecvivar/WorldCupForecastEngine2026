@@ -11,6 +11,10 @@ cache_hits_total: int = 0
 cache_misses_total: int = 0
 simulation_durations: list[float] = []
 db_query_durations: list[float] = []
+predictions_total: int = 0
+simulations_total: int = 0
+scenarios_total: int = 0
+calibrations_total: int = 0
 
 
 def inc_request_count(endpoint: str) -> None:
@@ -55,6 +59,30 @@ def record_simulation_duration(duration: float) -> None:
         simulation_durations.append(duration)
         if len(simulation_durations) > 100:
             simulation_durations = simulation_durations[-50:]
+
+
+def inc_predictions_total() -> None:
+    global predictions_total
+    with _lock:
+        predictions_total += 1
+
+
+def inc_simulations_total() -> None:
+    global simulations_total
+    with _lock:
+        simulations_total += 1
+
+
+def inc_scenarios_total() -> None:
+    global scenarios_total
+    with _lock:
+        scenarios_total += 1
+
+
+def inc_calibrations_total() -> None:
+    global calibrations_total
+    with _lock:
+        calibrations_total += 1
 
 
 def record_db_query_duration(duration: float) -> None:
@@ -102,6 +130,12 @@ def get_metrics() -> dict:
             "avg_query_duration_ms": avg_db_duration,
             "query_count": len(db_query_durations),
         },
+        "operations": {
+            "predictions_total": predictions_total,
+            "simulations_total": simulations_total,
+            "scenarios_total": scenarios_total,
+            "calibrations_total": calibrations_total,
+        },
     }
 
 
@@ -144,5 +178,21 @@ def get_prometheus_text() -> str:
         "# HELP db_query_duration_ms Database query duration",
         "# TYPE db_query_duration_ms gauge",
         f"db_query_duration_ms {m['database']['avg_query_duration_ms']}",
+        "",
+        "# HELP predictions_total Total predictions computed",
+        "# TYPE predictions_total counter",
+        f"predictions_total {m['operations']['predictions_total']}",
+        "",
+        "# HELP simulations_total Total simulations run",
+        "# TYPE simulations_total counter",
+        f"simulations_total {m['operations']['simulations_total']}",
+        "",
+        "# HELP scenarios_total Total scenarios evaluated",
+        "# TYPE scenarios_total counter",
+        f"scenarios_total {m['operations']['scenarios_total']}",
+        "",
+        "# HELP calibrations_total Total calibrations performed",
+        "# TYPE calibrations_total counter",
+        f"calibrations_total {m['operations']['calibrations_total']}",
     ]
     return "\n".join(lines) + "\n"

@@ -1,7 +1,13 @@
+from contextlib import asynccontextmanager
+
+import sentry_sdk
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
 
 from app.api import (
     analysis,
@@ -29,10 +35,44 @@ from app.core.error_handler import (
 from app.core.exceptions import AppError
 from app.core.logging import RequestLogMiddleware, setup_logging
 from app.core.middleware import MetricsMiddleware, SecurityHeadersMiddleware
+from app.core.rate_limit import limiter
+from app.core.startup import check_startup_readiness
 from app.db.session import engine, Base
 
 settings = get_settings()
 setup_logging()
+
+# --- Sentry ---
+if settings.sentry_dsn:
+    sentry_sdk.init(
+        dsn=settings.sentry_dsn,
+        environment=settings.sentry_environment,
+        traces_sample_rate=0.1,
+    )
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    from app.models import (  # noqa: F401
+        competition,
+        elo_rating,
+        fifa_ranking,
+        group,
+        group_standing,
+        match,
+        player,
+        simulation,
+        team,
+        xg_metrics,
+    )
+    Base.metadata.create_all(bind=engine)
+    report = check_startup_readiness()
+    if report.errors:
+        import logging
+        logger = logging.getLogger("startup")
+        for err in report.errors:
+            logger.error("Startup issue: %s", err)
+    yield
+
 
 app = FastAPI(
     title=settings.project_name,
@@ -42,7 +82,11 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc",
     openapi_url="/openapi.json",
+    lifespan=lifespan,
 )
+
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # --- CORS (explicit origins) ---
 origins = [o.strip() for o in settings.cors_origins.split(",") if o.strip()]
@@ -55,6 +99,7 @@ app.add_middleware(
 )
 
 # --- Middleware stack (order: bottom-up, outer=last added) ---
+app.add_middleware(SlowAPIMiddleware)
 app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(MetricsMiddleware)
 app.add_middleware(RequestLogMiddleware)
@@ -81,23 +126,6 @@ app.include_router(dashboard.router, prefix=settings.api_prefix)
 app.include_router(comparison.router, prefix=settings.api_prefix)
 app.include_router(export.router, prefix=settings.api_prefix)
 app.include_router(scenarios.router, prefix=settings.api_prefix)
-
-
-@app.on_event("startup")
-async def startup():
-    from app.models import (  # noqa: F401
-        competition,
-        elo_rating,
-        fifa_ranking,
-        group,
-        group_standing,
-        match,
-        player,
-        simulation,
-        team,
-        xg_metrics,
-    )
-    Base.metadata.create_all(bind=engine)
 
 
 @app.get("/", include_in_schema=False)

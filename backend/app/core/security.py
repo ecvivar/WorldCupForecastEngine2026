@@ -1,17 +1,16 @@
-import hashlib
-import hmac
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
+import jwt
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from jose import JWTError, jwt
-from passlib.context import CryptContext
+from jwt.exceptions import InvalidTokenError
+from pwdlib import PasswordHash
 
 from app.core.config import get_settings
 
 settings = get_settings()
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = PasswordHash.recommended()
 bearer_scheme = HTTPBearer(auto_error=False)
 
 
@@ -40,7 +39,7 @@ def create_refresh_token(data: dict[str, Any]) -> str:
 def decode_token(token: str) -> dict[str, Any]:
     try:
         return jwt.decode(token, settings.secret_key, algorithms=[settings.jwt_algorithm])
-    except JWTError:
+    except InvalidTokenError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or expired token")
 
 

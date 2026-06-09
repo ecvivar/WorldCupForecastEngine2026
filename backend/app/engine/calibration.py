@@ -244,7 +244,7 @@ class CalibrationEngine:
                     fp += 1
                 tpr.append(tp / pos)
                 fpr.append(fp / neg)
-            auc_val = float(np.trapezoid(tpr, fpr))
+            auc_val = float(np.trapz(tpr, fpr))
             aucs.append(auc_val)
         return float(np.mean(aucs)) if aucs else 0.0
 

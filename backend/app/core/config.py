@@ -1,5 +1,6 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from functools import lru_cache
+from pydantic import field_validator
 
 
 class Settings(BaseSettings):
@@ -52,6 +53,20 @@ class Settings(BaseSettings):
     jwt_algorithm: str = "HS256"
     jwt_expire_minutes: int = 30
     jwt_refresh_expire_days: int = 7
+
+    sentry_dsn: str = ""
+    sentry_environment: str = "production"
+
+    @field_validator("secret_key")
+    @classmethod
+    def validate_secret_key(cls, v: str) -> str:
+        if v == "change-me-in-production":
+            import warnings
+            warnings.warn(
+                "SECRET_KEY is set to default 'change-me-in-production'. "
+                "Set a strong SECRET_KEY in your .env file before deploying."
+            )
+        return v
 
 
 @lru_cache

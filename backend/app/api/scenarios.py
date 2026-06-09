@@ -1,11 +1,12 @@
 import uuid
 
 import numpy as np
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel
 from sqlalchemy.orm import Session, joinedload
 
 from app.core.dependencies import get_db
+from app.core.rate_limit import limiter
 from app.engine.monte_carlo import run_single_tournament_py
 from app.models.elo_rating import EloRating
 from app.models.group import Group
@@ -39,7 +40,8 @@ class ScenarioResult(BaseModel):
 
 
 @router.post("/simulate")
-def simulate_scenario(req: ScenarioRequest, db: Session = Depends(get_db)):
+@limiter.limit("5/minute")
+def simulate_scenario(request: Request, req: ScenarioRequest, db: Session = Depends(get_db)):
     teams = db.query(Team).order_by(Team.name).all()
     if not teams:
         raise HTTPException(status_code=400, detail="No teams in database")

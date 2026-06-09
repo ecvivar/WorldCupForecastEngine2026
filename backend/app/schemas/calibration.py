@@ -68,6 +68,7 @@ class OutcomeCalibrationCurveResponse(BaseModel):
 
 
 class ModelComparisonMetricResponse(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
     model_name: str
     overall: CalibrationMetricResponse
     by_tournament: dict[str, CalibrationMetricResponse] = {}

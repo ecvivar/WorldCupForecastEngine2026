@@ -1,10 +1,11 @@
 import uuid
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 
 from app.core.cache_decorator import cached
 from app.core.dependencies import PaginationParams, get_db
+from app.core.rate_limit import limiter
 from app.schemas.simulation import (
     SimulationCreate,
     SimulationResponse,
@@ -16,7 +17,9 @@ router = APIRouter(prefix="/simulations", tags=["Simulations"])
 
 @router.get("", response_model=list[SimulationResponse])
 @cached("simulations:list")
+@limiter.limit("10/minute")
 def list_simulations(
+    request: Request,
     pagination: PaginationParams = Depends(),
     db: Session = Depends(get_db),
 ):
@@ -61,13 +64,15 @@ def get_simulation(sim_id: uuid.UUID, db: Session = Depends(get_db)):
 
 
 @router.post("", response_model=SimulationResponse, status_code=201)
-def create_simulation(data: SimulationCreate, db: Session = Depends(get_db)):
+@limiter.limit("5/minute")
+def create_simulation(request: Request, data: SimulationCreate, db: Session = Depends(get_db)):
     service = SimulationService(db)
     return service.create(data)
 
 
 @router.post("/{sim_id}/run")
-def run_simulation(sim_id: uuid.UUID, db: Session = Depends(get_db)):
+@limiter.limit("5/minute")
+def run_simulation(request: Request, sim_id: uuid.UUID, db: Session = Depends(get_db)):
     service = SimulationService(db)
     sim = service.run_simulation(sim_id)
     if not sim:

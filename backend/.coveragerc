@@ -1,0 +1,13 @@
+[run]
+source = app
+omit = tests/*, app/models/*, app/alembic/*
+
+[report]
+fail_under = 80
+precision = 2
+show_missing = true
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    if __name__ == .__main__.:
+    raise NotImplementedError
