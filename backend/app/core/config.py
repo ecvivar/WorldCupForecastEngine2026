@@ -48,6 +48,11 @@ class Settings(BaseSettings):
     secret_key: str = "change-me-in-production"
     log_level: str = "INFO"
 
+    cors_origins: str = "http://localhost:3000,http://localhost:3001"
+    jwt_algorithm: str = "HS256"
+    jwt_expire_minutes: int = 30
+    jwt_refresh_expire_days: int = 7
+
 
 @lru_cache
 def get_settings() -> Settings:

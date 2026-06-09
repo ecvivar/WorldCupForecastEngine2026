@@ -1,0 +1,1126 @@
+{
+  "match_results": [
+    {
+      "match": "Brazil vs Bolivia",
+      "home_win_pct": 85.5,
+      "draw_pct": 14.3,
+      "away_win_pct": 0.2,
+      "xG_home": 4.1,
+      "xG_away": 0.26,
+      "confidence_index": 84.0,
+      "confidence_level": "Muy Alta"
+    },
+    {
+      "match": "France vs Haiti",
+      "home_win_pct": 86.2,
+      "draw_pct": 13.8,
+      "away_win_pct": 0.1,
+      "xG_home": 4.88,
+      "xG_away": 0.21,
+      "confidence_index": 88.0,
+      "confidence_level": "Muy Alta"
+    },
+    {
+      "match": "Argentina vs New Zealand",
+      "home_win_pct": 84.4,
+      "draw_pct": 15.2,
+      "away_win_pct": 0.5,
+      "xG_home": 3.45,
+      "xG_away": 0.31,
+      "confidence_index": 76.0,
+      "confidence_level": "Alta"
+    },
+    {
+      "match": "England vs San Marino",
+      "home_win_pct": 86.5,
+      "draw_pct": 13.5,
+      "away_win_pct": 0.0,
+      "xG_home": 5.46,
+      "xG_away": 0.18,
+      "confidence_index": 92.0,
+      "confidence_level": "Muy Alta"
+    },
+    {
+      "match": "Spain vs Andorra",
+      "home_win_pct": 86.4,
+      "draw_pct": 13.6,
+      "away_win_pct": 0.0,
+      "xG_home": 5.26,
+      "xG_away": 0.19,
+      "confidence_index": 91.0,
+      "confidence_level": "Muy Alta"
+    },
+    {
+      "match": "Mexico vs South Africa",
+      "home_win_pct": 75.4,
+      "draw_pct": 21.4,
+      "away_win_pct": 3.2,
+      "xG_home": 1.97,
+      "xG_away": 0.55,
+      "confidence_index": 32.0,
+      "confidence_level": "Muy Baja"
+    },
+    {
+      "match": "United States vs Paraguay",
+      "home_win_pct": 67.5,
+      "draw_pct": 24.1,
+      "away_win_pct": 8.4,
+      "xG_home": 1.62,
+      "xG_away": 0.67,
+      "confidence_index": 19.0,
+      "confidence_level": "Muy Baja"
+    },
+    {
+      "match": "Brazil vs France",
+      "home_win_pct": 56.6,
+      "draw_pct": 25.7,
+      "away_win_pct": 17.6,
+      "xG_home": 1.15,
+      "xG_away": 0.94,
+      "confidence_index": 8.0,
+      "confidence_level": "Muy Baja"
+    },
+    {
+      "match": "Argentina vs England",
+      "home_win_pct": 56.6,
+      "draw_pct": 25.7,
+      "away_win_pct": 17.6,
+      "xG_home": 1.15,
+      "xG_away": 0.94,
+      "confidence_index": 8.0,
+      "confidence_level": "Muy Baja"
+    }
+  ],
+  "match_anomalies": [
+    "Mexico                    vs South Africa             : probs sum != 1",
+    "Brazil                    vs France                   : probs sum != 1",
+    "Argentina                 vs England                  : probs sum != 1"
+  ],
+  "champion_top20_10k": [
+    [
+      "Brazil",
+      20.16,
+      "C"
+    ],
+    [
+      "Argentina",
+      13.68,
+      "J"
+    ],
+    [
+      "France",
+      11.25,
+      "I"
+    ],
+    [
+      "England",
+      9.29,
+      "L"
+    ],
+    [
+      "Germany",
+      8.51,
+      "E"
+    ],
+    [
+      "Spain",
+      7.97,
+      "H"
+    ],
+    [
+      "Netherlands",
+      5.64,
+      "F"
+    ],
+    [
+      "Portugal",
+      4.4,
+      "K"
+    ],
+    [
+      "Belgium",
+      4.31,
+      "G"
+    ],
+    [
+      "Mexico",
+      2.53,
+      "A"
+    ],
+    [
+      "Uruguay",
+      1.96,
+      "H"
+    ],
+    [
+      "Croatia",
+      1.87,
+      "L"
+    ],
+    [
+      "Switzerland",
+      1.79,
+      "B"
+    ],
+    [
+      "Colombia",
+      1.34,
+      "K"
+    ],
+    [
+      "United States",
+      0.89,
+      "D"
+    ],
+    [
+      "Morocco",
+      0.7,
+      "C"
+    ],
+    [
+      "Norway",
+      0.51,
+      "I"
+    ],
+    [
+      "Senegal",
+      0.45,
+      "I"
+    ],
+    [
+      "Turkey",
+      0.31,
+      "D"
+    ],
+    [
+      "Ecuador",
+      0.3,
+      "E"
+    ]
+  ],
+  "champion_top20_50k": [
+    [
+      "Brazil",
+      20.29,
+      "C"
+    ],
+    [
+      "Argentina",
+      13.42,
+      "J"
+    ],
+    [
+      "France",
+      11.29,
+      "I"
+    ],
+    [
+      "England",
+      8.81,
+      "L"
+    ],
+    [
+      "Germany",
+      8.66,
+      "E"
+    ],
+    [
+      "Spain",
+      8.53,
+      "H"
+    ],
+    [
+      "Netherlands",
+      5.75,
+      "F"
+    ],
+    [
+      "Portugal",
+      4.49,
+      "K"
+    ],
+    [
+      "Belgium",
+      4.16,
+      "G"
+    ],
+    [
+      "Mexico",
+      2.54,
+      "A"
+    ],
+    [
+      "Croatia",
+      2.06,
+      "L"
+    ],
+    [
+      "Uruguay",
+      1.73,
+      "H"
+    ],
+    [
+      "Switzerland",
+      1.58,
+      "B"
+    ],
+    [
+      "Colombia",
+      1.25,
+      "K"
+    ],
+    [
+      "United States",
+      1.05,
+      "D"
+    ],
+    [
+      "Morocco",
+      0.7,
+      "C"
+    ],
+    [
+      "Norway",
+      0.54,
+      "I"
+    ],
+    [
+      "Senegal",
+      0.42,
+      "I"
+    ],
+    [
+      "Turkey",
+      0.32,
+      "D"
+    ],
+    [
+      "Austria",
+      0.32,
+      "J"
+    ]
+  ],
+  "champion_top20_100k": [
+    [
+      "Brazil",
+      20.25,
+      "C"
+    ],
+    [
+      "Argentina",
+      13.33,
+      "J"
+    ],
+    [
+      "France",
+      11.58,
+      "I"
+    ],
+    [
+      "England",
+      8.79,
+      "L"
+    ],
+    [
+      "Germany",
+      8.56,
+      "E"
+    ],
+    [
+      "Spain",
+      8.33,
+      "H"
+    ],
+    [
+      "Netherlands",
+      5.75,
+      "F"
+    ],
+    [
+      "Portugal",
+      4.65,
+      "K"
+    ],
+    [
+      "Belgium",
+      4.23,
+      "G"
+    ],
+    [
+      "Mexico",
+      2.43,
+      "A"
+    ],
+    [
+      "Croatia",
+      1.9,
+      "L"
+    ],
+    [
+      "Uruguay",
+      1.81,
+      "H"
+    ],
+    [
+      "Switzerland",
+      1.64,
+      "B"
+    ],
+    [
+      "Colombia",
+      1.35,
+      "K"
+    ],
+    [
+      "United States",
+      1.1,
+      "D"
+    ],
+    [
+      "Morocco",
+      0.73,
+      "C"
+    ],
+    [
+      "Norway",
+      0.51,
+      "I"
+    ],
+    [
+      "Senegal",
+      0.43,
+      "I"
+    ],
+    [
+      "Turkey",
+      0.35,
+      "D"
+    ],
+    [
+      "Austria",
+      0.29,
+      "J"
+    ]
+  ],
+  "finalist_top20_10k": [
+    [
+      "Brazil",
+      32.81,
+      "C"
+    ],
+    [
+      "Argentina",
+      23.6,
+      "J"
+    ],
+    [
+      "France",
+      19.85,
+      "I"
+    ],
+    [
+      "England",
+      16.75,
+      "L"
+    ],
+    [
+      "Germany",
+      16.14,
+      "E"
+    ],
+    [
+      "Spain",
+      15.04,
+      "H"
+    ],
+    [
+      "Netherlands",
+      11.07,
+      "F"
+    ],
+    [
+      "Portugal",
+      9.32,
+      "K"
+    ],
+    [
+      "Belgium",
+      9.35,
+      "G"
+    ],
+    [
+      "Mexico",
+      6.86,
+      "A"
+    ],
+    [
+      "Uruguay",
+      4.38,
+      "H"
+    ],
+    [
+      "Croatia",
+      4.62,
+      "L"
+    ],
+    [
+      "Switzerland",
+      4.72,
+      "B"
+    ],
+    [
+      "Colombia",
+      3.55,
+      "K"
+    ],
+    [
+      "United States",
+      3.25,
+      "D"
+    ],
+    [
+      "Morocco",
+      2.46,
+      "C"
+    ],
+    [
+      "Norway",
+      1.82,
+      "I"
+    ],
+    [
+      "Senegal",
+      1.81,
+      "I"
+    ],
+    [
+      "Turkey",
+      1.21,
+      "D"
+    ],
+    [
+      "Ecuador",
+      1.27,
+      "E"
+    ]
+  ],
+  "finalist_top20_50k": [
+    [
+      "Brazil",
+      33.09,
+      "C"
+    ],
+    [
+      "Argentina",
+      23.21,
+      "J"
+    ],
+    [
+      "France",
+      20.3,
+      "I"
+    ],
+    [
+      "England",
+      16.4,
+      "L"
+    ],
+    [
+      "Germany",
+      15.88,
+      "E"
+    ],
+    [
+      "Spain",
+      15.4,
+      "H"
+    ],
+    [
+      "Netherlands",
+      11.34,
+      "F"
+    ],
+    [
+      "Portugal",
+      9.56,
+      "K"
+    ],
+    [
+      "Belgium",
+      8.96,
+      "G"
+    ],
+    [
+      "Mexico",
+      6.56,
+      "A"
+    ],
+    [
+      "Croatia",
+      5.06,
+      "L"
+    ],
+    [
+      "Uruguay",
+      4.32,
+      "H"
+    ],
+    [
+      "Switzerland",
+      4.65,
+      "B"
+    ],
+    [
+      "Colombia",
+      3.49,
+      "K"
+    ],
+    [
+      "United States",
+      3.31,
+      "D"
+    ],
+    [
+      "Morocco",
+      2.4,
+      "C"
+    ],
+    [
+      "Norway",
+      1.92,
+      "I"
+    ],
+    [
+      "Senegal",
+      1.65,
+      "I"
+    ],
+    [
+      "Turkey",
+      1.26,
+      "D"
+    ],
+    [
+      "Austria",
+      1.26,
+      "J"
+    ]
+  ],
+  "finalist_top20_100k": [
+    [
+      "Brazil",
+      32.86,
+      "C"
+    ],
+    [
+      "Argentina",
+      23.49,
+      "J"
+    ],
+    [
+      "France",
+      20.41,
+      "I"
+    ],
+    [
+      "England",
+      16.18,
+      "L"
+    ],
+    [
+      "Germany",
+      16.02,
+      "E"
+    ],
+    [
+      "Spain",
+      15.04,
+      "H"
+    ],
+    [
+      "Netherlands",
+      11.49,
+      "F"
+    ],
+    [
+      "Portugal",
+      9.65,
+      "K"
+    ],
+    [
+      "Belgium",
+      9.18,
+      "G"
+    ],
+    [
+      "Mexico",
+      6.38,
+      "A"
+    ],
+    [
+      "Croatia",
+      4.91,
+      "L"
+    ],
+    [
+      "Uruguay",
+      4.38,
+      "H"
+    ],
+    [
+      "Switzerland",
+      4.83,
+      "B"
+    ],
+    [
+      "Colombia",
+      3.55,
+      "K"
+    ],
+    [
+      "United States",
+      3.38,
+      "D"
+    ],
+    [
+      "Morocco",
+      2.51,
+      "C"
+    ],
+    [
+      "Norway",
+      1.87,
+      "I"
+    ],
+    [
+      "Senegal",
+      1.62,
+      "I"
+    ],
+    [
+      "Turkey",
+      1.25,
+      "D"
+    ],
+    [
+      "Austria",
+      1.27,
+      "J"
+    ]
+  ],
+  "semi_top20_100k": [
+    [
+      "Brazil",
+      53.56,
+      "C"
+    ],
+    [
+      "Argentina",
+      30.56,
+      "J"
+    ],
+    [
+      "France",
+      27.34,
+      "I"
+    ],
+    [
+      "England",
+      22.17,
+      "L"
+    ],
+    [
+      "Germany",
+      28.75,
+      "E"
+    ],
+    [
+      "Spain",
+      25.97,
+      "H"
+    ],
+    [
+      "Netherlands",
+      22.3,
+      "F"
+    ],
+    [
+      "Portugal",
+      14.67,
+      "K"
+    ],
+    [
+      "Belgium",
+      18.9,
+      "G"
+    ],
+    [
+      "Mexico",
+      17.27,
+      "A"
+    ],
+    [
+      "Croatia",
+      9.2,
+      "L"
+    ],
+    [
+      "Uruguay",
+      10.2,
+      "H"
+    ],
+    [
+      "Switzerland",
+      13.98,
+      "B"
+    ],
+    [
+      "Colombia",
+      7.09,
+      "K"
+    ],
+    [
+      "United States",
+      10.5,
+      "D"
+    ],
+    [
+      "Morocco",
+      8.67,
+      "C"
+    ],
+    [
+      "Norway",
+      6.49,
+      "I"
+    ],
+    [
+      "Senegal",
+      6.0,
+      "I"
+    ],
+    [
+      "Turkey",
+      5.31,
+      "D"
+    ],
+    [
+      "Austria",
+      5.07,
+      "J"
+    ]
+  ],
+  "qual_probs_100k": {
+    "Brazil": {
+      "r32_pct": 99.90400000000001,
+      "win_pct": 20.254,
+      "final_pct": 32.857,
+      "semi_pct": 53.55799999999999
+    },
+    "Argentina": {
+      "r32_pct": 99.411,
+      "win_pct": 13.325999999999999,
+      "final_pct": 23.494,
+      "semi_pct": 30.557000000000002
+    },
+    "France": {
+      "r32_pct": 98.744,
+      "win_pct": 11.578,
+      "final_pct": 20.408,
+      "semi_pct": 27.339999999999996
+    },
+    "England": {
+      "r32_pct": 99.368,
+      "win_pct": 8.791,
+      "final_pct": 16.182,
+      "semi_pct": 22.167
+    },
+    "Germany": {
+      "r32_pct": 99.87,
+      "win_pct": 8.559999999999999,
+      "final_pct": 16.017,
+      "semi_pct": 28.747
+    },
+    "Spain": {
+      "r32_pct": 99.657,
+      "win_pct": 8.334999999999999,
+      "final_pct": 15.045,
+      "semi_pct": 25.968999999999998
+    },
+    "Netherlands": {
+      "r32_pct": 96.479,
+      "win_pct": 5.755,
+      "final_pct": 11.486,
+      "semi_pct": 22.303
+    },
+    "Portugal": {
+      "r32_pct": 98.729,
+      "win_pct": 4.651000000000001,
+      "final_pct": 9.651,
+      "semi_pct": 14.668999999999999
+    },
+    "Belgium": {
+      "r32_pct": 98.356,
+      "win_pct": 4.234999999999999,
+      "final_pct": 9.183,
+      "semi_pct": 18.898
+    },
+    "Mexico": {
+      "r32_pct": 93.415,
+      "win_pct": 2.434,
+      "final_pct": 6.381,
+      "semi_pct": 17.275
+    },
+    "Croatia": {
+      "r32_pct": 96.307,
+      "win_pct": 1.902,
+      "final_pct": 4.914000000000001,
+      "semi_pct": 9.2
+    },
+    "Uruguay": {
+      "r32_pct": 97.731,
+      "win_pct": 1.812,
+      "final_pct": 4.383,
+      "semi_pct": 10.197000000000001
+    },
+    "Switzerland": {
+      "r32_pct": 93.16499999999999,
+      "win_pct": 1.641,
+      "final_pct": 4.83,
+      "semi_pct": 13.977999999999998
+    },
+    "Colombia": {
+      "r32_pct": 95.91199999999999,
+      "win_pct": 1.35,
+      "final_pct": 3.5450000000000004,
+      "semi_pct": 7.095
+    },
+    "United States": {
+      "r32_pct": 89.905,
+      "win_pct": 1.1039999999999999,
+      "final_pct": 3.385,
+      "semi_pct": 10.504
+    },
+    "Morocco": {
+      "r32_pct": 94.511,
+      "win_pct": 0.73,
+      "final_pct": 2.513,
+      "semi_pct": 8.671
+    },
+    "Norway": {
+      "r32_pct": 78.29899999999999,
+      "win_pct": 0.51,
+      "final_pct": 1.8689999999999998,
+      "semi_pct": 6.486
+    },
+    "Senegal": {
+      "r32_pct": 76.592,
+      "win_pct": 0.42700000000000005,
+      "final_pct": 1.6209999999999998,
+      "semi_pct": 6.001
+    },
+    "Turkey": {
+      "r32_pct": 79.445,
+      "win_pct": 0.35400000000000004,
+      "final_pct": 1.252,
+      "semi_pct": 5.313
+    },
+    "Austria": {
+      "r32_pct": 80.366,
+      "win_pct": 0.28800000000000003,
+      "final_pct": 1.275,
+      "semi_pct": 5.065
+    },
+    "Czech Republic": {
+      "r32_pct": 74.599,
+      "win_pct": 0.257,
+      "final_pct": 1.058,
+      "semi_pct": 4.909
+    },
+    "Ecuador": {
+      "r32_pct": 90.881,
+      "win_pct": 0.245,
+      "final_pct": 1.0959999999999999,
+      "semi_pct": 5.229
+    },
+    "Algeria": {
+      "r32_pct": 75.114,
+      "win_pct": 0.22699999999999998,
+      "final_pct": 0.9610000000000001,
+      "semi_pct": 4.333
+    },
+    "Sweden": {
+      "r32_pct": 70.052,
+      "win_pct": 0.22200000000000003,
+      "final_pct": 0.9900000000000001,
+      "semi_pct": 4.406000000000001
+    },
+    "Canada": {
+      "r32_pct": 75.70700000000001,
+      "win_pct": 0.17500000000000002,
+      "final_pct": 0.779,
+      "semi_pct": 4.2909999999999995
+    },
+    "Japan": {
+      "r32_pct": 65.93,
+      "win_pct": 0.156,
+      "final_pct": 0.738,
+      "semi_pct": 3.671
+    },
+    "Ivory Coast": {
+      "r32_pct": 86.401,
+      "win_pct": 0.14200000000000002,
+      "final_pct": 0.711,
+      "semi_pct": 4.256
+    },
+    "Egypt": {
+      "r32_pct": 78.82900000000001,
+      "win_pct": 0.135,
+      "final_pct": 0.575,
+      "semi_pct": 2.962
+    },
+    "Bosnia and Herzegovina": {
+      "r32_pct": 69.913,
+      "win_pct": 0.101,
+      "final_pct": 0.544,
+      "semi_pct": 3.227
+    },
+    "South Korea": {
+      "r32_pct": 64.596,
+      "win_pct": 0.08099999999999999,
+      "final_pct": 0.502,
+      "semi_pct": 3.141
+    },
+    "Scotland": {
+      "r32_pct": 72.75,
+      "win_pct": 0.07100000000000001,
+      "final_pct": 0.471,
+      "semi_pct": 3.5929999999999995
+    },
+    "Iran": {
+      "r32_pct": 62.71099999999999,
+      "win_pct": 0.04,
+      "final_pct": 0.232,
+      "semi_pct": 1.752
+    },
+    "Ghana": {
+      "r32_pct": 54.781,
+      "win_pct": 0.04,
+      "final_pct": 0.316,
+      "semi_pct": 2.426
+    },
+    "Paraguay": {
+      "r32_pct": 54.106,
+      "win_pct": 0.024,
+      "final_pct": 0.196,
+      "semi_pct": 1.704
+    },
+    "Australia": {
+      "r32_pct": 49.209,
+      "win_pct": 0.013,
+      "final_pct": 0.155,
+      "semi_pct": 1.352
+    },
+    "South Africa": {
+      "r32_pct": 38.887,
+      "win_pct": 0.01,
+      "final_pct": 0.08,
+      "semi_pct": 0.8290000000000001
+    },
+    "Tunisia": {
+      "r32_pct": 35.765,
+      "win_pct": 0.009000000000000001,
+      "final_pct": 0.11100000000000002,
+      "semi_pct": 1.026
+    },
+    "Saudi Arabia": {
+      "r32_pct": 42.859,
+      "win_pct": 0.006,
+      "final_pct": 0.073,
+      "semi_pct": 0.962
+    },
+    "DR Congo": {
+      "r32_pct": 35.231,
+      "win_pct": 0.005,
+      "final_pct": 0.041,
+      "semi_pct": 0.609
+    },
+    "Qatar": {
+      "r32_pct": 33.783,
+      "win_pct": 0.002,
+      "final_pct": 0.029,
+      "semi_pct": 0.45799999999999996
+    },
+    "Iraq": {
+      "r32_pct": 15.292,
+      "win_pct": 0.001,
+      "final_pct": 0.016,
+      "semi_pct": 0.22999999999999998
+    },
+    "Uzbekistan": {
+      "r32_pct": 23.918,
+      "win_pct": 0.001,
+      "final_pct": 0.015,
+      "semi_pct": 0.26
+    },
+    "Haiti": {
+      "r32_pct": 3.421,
+      "win_pct": 0.0,
+      "final_pct": 0.0,
+      "semi_pct": 0.002
+    },
+    "Curacao": {
+      "r32_pct": 2.561,
+      "win_pct": 0.0,
+      "final_pct": 0.0,
+      "semi_pct": 0.002
+    },
+    "New Zealand": {
+      "r32_pct": 25.330000000000002,
+      "win_pct": 0.0,
+      "final_pct": 0.011000000000000001,
+      "semi_pct": 0.211
+    },
+    "Cape Verde": {
+      "r32_pct": 9.911,
+      "win_pct": 0.0,
+      "final_pct": 0.003,
+      "semi_pct": 0.037
+    },
+    "Jordan": {
+      "r32_pct": 12.258,
+      "win_pct": 0.0,
+      "final_pct": 0.006,
+      "semi_pct": 0.091
+    },
+    "Panama": {
+      "r32_pct": 9.039,
+      "win_pct": 0.0,
+      "final_pct": 0.0,
+      "semi_pct": 0.038
+    }
+  },
+  "sim_durations": {
+    "10k": 2.22,
+    "50k": 11.16,
+    "100k": 22.43
+  },
+  "convergence": {
+    "avg_delta": 0.26369999999999993,
+    "max_delta": 0.5560000000000009
+  },
+  "calibration": {
+    "accuracy": 0.5625,
+    "brier_score": 0.5567,
+    "log_loss": 0.9655,
+    "ece": 0.0547,
+    "auc_roc": 0.6977,
+    "match_count": 192,
+    "duration": 0.14144277572631836
+  },
+  "performance": {
+    "match_prediction_ms": 0.6375527381896973,
+    "calibration_192s": 0.129,
+    "mc_memory_bytes": 7680
+  }
+}

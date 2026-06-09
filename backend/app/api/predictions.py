@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
+from app.core.cache_decorator import cached
 from app.core.dependencies import PaginationParams, get_db
 from app.schemas.match import MatchPrediction
 from app.schemas.ranking import IGFScoreResponse
@@ -11,6 +12,7 @@ router = APIRouter(prefix="/predictions", tags=["Predictions"])
 
 
 @router.get("", response_model=list[MatchPrediction])
+@cached("predictions:list")
 def list_predictions(
     pagination: PaginationParams = Depends(),
     db: Session = Depends(get_db),
@@ -26,6 +28,7 @@ def list_predictions(
 
 
 @router.get("/rankings", response_model=list[IGFScoreResponse])
+@cached("predictions:rankings")
 def get_igf_rankings(db: Session = Depends(get_db)):
     service = RankingService(db)
     return service.compute_igf()

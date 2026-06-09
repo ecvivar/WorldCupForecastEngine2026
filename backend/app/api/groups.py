@@ -3,6 +3,7 @@ import uuid
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session, joinedload
 
+from app.core.cache_decorator import cached
 from app.core.dependencies import get_db
 from app.models.group import Group
 from app.models.group_standing import GroupStanding
@@ -12,12 +13,14 @@ router = APIRouter(prefix="/groups", tags=["Groups"])
 
 
 @router.get("", response_model=list[GroupResponse])
+@cached("groups:list")
 def list_groups(db: Session = Depends(get_db)):
     groups = db.query(Group).all()
     return groups
 
 
 @router.get("/{group_id}", response_model=GroupDetail)
+@cached("groups:detail")
 def get_group(group_id: uuid.UUID, db: Session = Depends(get_db)):
     group = (
         db.query(Group)

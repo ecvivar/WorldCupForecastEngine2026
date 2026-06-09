@@ -239,9 +239,11 @@ class MatchPredictionEngine:
 
         matrix = np.outer(home_goal_dist, away_goal_dist)
 
-        home_win = np.sum(matrix[np.triu_indices(max_g + 1, k=1)])
+        # triu_indices: row < col  => home < away => away win
+        # tril_indices: row > col  => home > away => home win
+        away_win = np.sum(matrix[np.triu_indices(max_g + 1, k=1)])
         draw = np.sum(np.diag(matrix))
-        away_win = np.sum(matrix[np.tril_indices(max_g + 1, k=-1)])
+        home_win = np.sum(matrix[np.tril_indices(max_g + 1, k=-1)])
 
         total = home_win + draw + away_win
         if total > 0:

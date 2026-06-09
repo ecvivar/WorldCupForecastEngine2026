@@ -3,6 +3,7 @@ import uuid
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session, joinedload
 
+from app.core.cache_decorator import cached
 from app.core.dependencies import get_db
 from app.models.elo_rating import EloRating
 from app.models.group import Group
@@ -16,6 +17,7 @@ router = APIRouter(tags=["Dashboard"])
 
 
 @router.get("/dashboard")
+@cached("dashboard:main")
 def dashboard(db: Session = Depends(get_db)):
     total_teams = db.query(Team).count()
     total_matches = db.query(Match).count()

@@ -70,7 +70,7 @@ class CalibrationEngine:
         by_stage = {}
         for s in sorted(set(stages)):
             mask = np.array([x == s for x in stages])
-            if mask.sum() < 2:
+            if mask.sum() < 1:
                 continue
             by_stage[s] = self._compute_metrics(pred_probs[mask], actual_arr[mask])
 
@@ -129,7 +129,7 @@ class CalibrationEngine:
             by_stage = {}
             for s in sorted(set(stages)):
                 mask = np.array([x == s for x in stages])
-                if mask.sum() < 2:
+                if mask.sum() < 1:
                     continue
                 by_stage[s] = self._compute_metrics(pred_probs[mask], actual_arr[mask])
 
@@ -307,7 +307,8 @@ class CalibrationEngine:
         return curves
 
     @staticmethod
-    def _bias_analysis(pred_probs: np.ndarray, actuals: np.ndarray, confidences: np.ndarray) -> BiasReport:
+    def _bias_analysis(pred_probs: np.ndarray, actuals: np.ndarray, confidences: np.ndarray | list) -> BiasReport:
+        confidences = np.asarray(confidences, dtype=float)
         pred_class = np.argmax(pred_probs, axis=1)
         actual_class = np.argmax(actuals, axis=1)
         n = len(pred_class)

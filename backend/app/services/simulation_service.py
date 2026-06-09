@@ -1,9 +1,13 @@
 import json
+import time
 import uuid
 from datetime import datetime
 
 from sqlalchemy.orm import Session, joinedload
 
+from app.core.cache import get_cache
+from app.core.logging import log_simulation
+from app.core.metrics import record_simulation_duration
 from app.domain.entities import SimulationConfig, TeamEntity
 from app.engine.igf import IGFEngine
 from app.engine.monte_carlo import MonteCarloEngine
@@ -24,21 +28,36 @@ class SimulationService:
         self.igf_engine = IGFEngine()
 
     def get_all(self, skip: int = 0, limit: int = 20) -> list[Simulation]:
-        return (
+        cache_key = f"simulations:list:skip={skip}:limit={limit}"
+        cache = get_cache()
+        cached = cache.get_sync(cache_key)
+        if cached is not None:
+            return cached
+        result = (
             self.db.query(Simulation)
             .order_by(Simulation.created_at.desc())
             .offset(skip)
             .limit(limit)
             .all()
         )
+        cache.set_sync(cache_key, result)
+        return result
 
     def get_by_id(self, sim_id: uuid.UUID) -> Simulation | None:
-        return (
+        cache_key = f"simulations:detail:{sim_id}"
+        cache = get_cache()
+        cached = cache.get_sync(cache_key)
+        if cached is not None:
+            return cached
+        result = (
             self.db.query(Simulation)
             .options(joinedload(Simulation.results).joinedload(SimulationResult.team))
             .filter(Simulation.id == sim_id)
             .first()
         )
+        if result:
+            cache.set_sync(cache_key, result)
+        return result
 
     def create(self, data: SimulationCreate) -> Simulation:
         sim = Simulation(
@@ -50,6 +69,8 @@ class SimulationService:
         self.db.add(sim)
         self.db.commit()
         self.db.refresh(sim)
+        cache = get_cache()
+        cache.invalidate("simulations:list:*")
         return sim
 
     def _load_team_entities(self) -> tuple[list[TeamEntity], dict[uuid.UUID, str]]:
@@ -112,6 +133,7 @@ class SimulationService:
         sim.status = "running"
         self.db.commit()
 
+        start = time.time()
         team_entities, group_mapping = self._load_team_entities()
 
         config = SimulationConfig(
@@ -140,4 +162,21 @@ class SimulationService:
         sim.completed_at = datetime.utcnow()
         self.db.commit()
         self.db.refresh(sim)
+
+        duration = time.time() - start
+        record_simulation_duration(duration * 1000)
+        log_simulation(
+            simulation_id=str(sim_id),
+            teams=len(team_entities),
+            iterations=sim.num_simulations,
+            duration=duration,
+            success=True,
+        )
+
+        cache = get_cache()
+        cache.invalidate("simulations:list:*")
+        cache.invalidate(f"simulations:detail:{sim_id}")
+        cache.invalidate("dashboard:*")
+        cache.invalidate("rankings:*")
+
         return sim

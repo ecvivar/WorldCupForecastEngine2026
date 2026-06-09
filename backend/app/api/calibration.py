@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Body, HTTPException, Query
 
+from app.core.cache_decorator import cached
 from app.schemas.calibration import CalibrationReportResponse
 from app.services.calibration_service import CalibrationService
 
@@ -16,6 +17,7 @@ def get_service() -> CalibrationService:
 
 
 @router.post("/run", response_model=CalibrationReportResponse)
+@cached("calibration:run")
 def run_calibration(
     tournaments: list[str] | None = Query(None, description="Filter by tournaments (e.g. 2014, 2018, 2022)"),
     model_type: str = Query("full", description="Model type: poisson, dixon_coles, or full"),
@@ -30,6 +32,7 @@ def run_calibration(
 
 
 @router.post("/benchmark", response_model=CalibrationReportResponse)
+@cached("benchmark:run")
 def run_benchmark(
     tournaments: list[str] | None = Query(None, description="Filter by tournaments (e.g. 2014, 2018, 2022)"),
 ):
@@ -41,6 +44,7 @@ def run_benchmark(
 
 
 @router.get("/results", response_model=CalibrationReportResponse)
+@cached("calibration:results")
 def get_calibration_results():
     """Get last calibration results."""
     report = get_service().get_last_report()
@@ -60,6 +64,8 @@ class ApplyAdjustmentsRequest(BaseModel):
 def apply_adjustments(body: ApplyAdjustmentsRequest):
     """Apply calibration adjustments to the prediction engine."""
     get_service().apply_adjustments(body.adjustments)
+    cache = __import__("app.core.cache", fromlist=["get_cache"]).get_cache()
+    cache.invalidate("calibration:*")
     return {"status": "applied", "adjustments": body.adjustments}
 
 

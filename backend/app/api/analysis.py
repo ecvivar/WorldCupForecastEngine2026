@@ -4,6 +4,7 @@ import pandas as pd
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session, joinedload
 
+from app.core.cache_decorator import cached
 from app.core.dependencies import get_db
 from app.engine.igf import IGFEngine
 from app.models.elo_rating import EloRating
@@ -19,6 +20,7 @@ router = APIRouter(tags=["Analysis"])
 
 
 @router.get("/groups/{group_id}/analysis")
+@cached("analysis:group")
 def analyze_group(group_id: uuid.UUID, db: Session = Depends(get_db)):
     group = (
         db.query(Group)
@@ -69,6 +71,7 @@ def analyze_group(group_id: uuid.UUID, db: Session = Depends(get_db)):
 
 
 @router.get("/rankings/power-ranking")
+@cached("analysis:power-ranking")
 def power_ranking(db: Session = Depends(get_db)):
     teams = db.query(Team).all()
     rows = []
@@ -111,6 +114,7 @@ def power_ranking(db: Session = Depends(get_db)):
 
 
 @router.get("/predictions/full/{match_id}")
+@cached("analysis:full-prediction")
 def full_prediction(match_id: uuid.UUID, db: Session = Depends(get_db)):
     service = MatchService(db)
     result = service.get_full_prediction(match_id)
@@ -120,6 +124,7 @@ def full_prediction(match_id: uuid.UUID, db: Session = Depends(get_db)):
 
 
 @router.get("/matches/calendar")
+@cached("analysis:calendar")
 def match_calendar(db: Session = Depends(get_db)):
     matches = (
         db.query(Match)
@@ -152,6 +157,7 @@ def match_calendar(db: Session = Depends(get_db)):
 
 
 @router.get("/predictions/betting/{match_id}")
+@cached("analysis:betting")
 def betting_markets(match_id: uuid.UUID, db: Session = Depends(get_db)):
     service = MatchService(db)
     pred = service.get_full_prediction(match_id)

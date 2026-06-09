@@ -23,21 +23,21 @@ def sample_matches():
             home_team="Brazil", away_team="Serbia",
             home_goals=2, away_goals=0,
             home_elo=2200, away_elo=1700,
-            home_igf=0.95, away_igf=0.50,
+            home_igf=95, away_igf=50,
         ),
         HistoricalMatchData(
             tournament="2022", stage="group",
             home_team="Argentina", away_team="Saudi Arabia",
             home_goals=1, away_goals=2,
             home_elo=1950, away_elo=1500,
-            home_igf=0.75, away_igf=0.30,
+            home_igf=75, away_igf=30,
         ),
         HistoricalMatchData(
             tournament="2022", stage="final",
             home_team="Argentina", away_team="France",
             home_goals=3, away_goals=3,
             home_elo=1950, away_elo=2100,
-            home_igf=0.75, away_igf=0.90,
+            home_igf=75, away_igf=90,
         ),
     ]
 

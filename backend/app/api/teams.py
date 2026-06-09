@@ -3,6 +3,7 @@ import uuid
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from app.core.cache_decorator import cached
 from app.core.dependencies import PaginationParams, get_db
 from app.schemas.team import TeamCreate, TeamResponse, TeamUpdate, TeamWithStats
 from app.services.team_service import TeamService
@@ -11,6 +12,7 @@ router = APIRouter(prefix="/teams", tags=["Teams"])
 
 
 @router.get("", response_model=list[TeamResponse])
+@cached("teams:list")
 def list_teams(
     pagination: PaginationParams = Depends(),
     db: Session = Depends(get_db),
@@ -20,6 +22,7 @@ def list_teams(
 
 
 @router.get("/{team_id}", response_model=TeamResponse)
+@cached("teams:detail")
 def get_team(team_id: uuid.UUID, db: Session = Depends(get_db)):
     service = TeamService(db)
     team = service.get_by_id(team_id)

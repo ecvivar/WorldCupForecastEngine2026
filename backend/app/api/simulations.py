@@ -3,6 +3,7 @@ import uuid
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from app.core.cache_decorator import cached
 from app.core.dependencies import PaginationParams, get_db
 from app.schemas.simulation import (
     SimulationCreate,
@@ -14,6 +15,7 @@ router = APIRouter(prefix="/simulations", tags=["Simulations"])
 
 
 @router.get("", response_model=list[SimulationResponse])
+@cached("simulations:list")
 def list_simulations(
     pagination: PaginationParams = Depends(),
     db: Session = Depends(get_db),
@@ -23,6 +25,7 @@ def list_simulations(
 
 
 @router.get("/{sim_id}")
+@cached("simulations:detail")
 def get_simulation(sim_id: uuid.UUID, db: Session = Depends(get_db)):
     service = SimulationService(db)
     sim = service.get_by_id(sim_id)

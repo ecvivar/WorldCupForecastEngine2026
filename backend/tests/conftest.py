@@ -13,6 +13,20 @@ from app.core.dependencies import get_db
 from app.db.session import Base
 from app.main import app
 
+# Import all models to ensure tables are registered with SQLAlchemy metadata
+from app.models import (  # noqa: F401
+    competition,
+    elo_rating,
+    fifa_ranking,
+    group,
+    group_standing,
+    match,
+    player,
+    simulation,
+    team,
+    xg_metrics,
+)
+
 TEST_DATABASE_URL = "sqlite:///./test.db"
 engine = create_engine(TEST_DATABASE_URL, connect_args={"check_same_thread": False})
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException, Query
 
+from app.core.cache_decorator import cached
 from app.schemas.calibration_refinement import RefinementReportResponse
 from app.services.calibration_refinement_service import CalibrationRefinementService
 
@@ -16,6 +17,7 @@ def get_service() -> CalibrationRefinementService:
 
 
 @router.post("/run", response_model=RefinementReportResponse)
+@cached("refinement:run")
 def run_refinement(
     tournaments: list[str] | None = Query(None, description="Filter by tournaments (e.g. 2014, 2018, 2022)"),
 ):
@@ -27,6 +29,7 @@ def run_refinement(
 
 
 @router.get("/results", response_model=RefinementReportResponse)
+@cached("refinement:results")
 def get_refinement_results():
     """Get last refinement results."""
     report = get_service().get_last_report()
