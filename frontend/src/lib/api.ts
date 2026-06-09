@@ -436,4 +436,18 @@ export const api = {
     results: () =>
       fetchJSON<RefinementReport>("/calibration/refinement/results"),
   },
+  comparison: {
+    compare: (teamAId: string, teamBId: string) =>
+      fetchJSON<any>(`/comparison/teams/${teamAId}/${teamBId}`),
+  },
+  scenarios: {
+    simulate: (data: {
+      modifications: { team_name: string; result_modifier: number; description?: string }[];
+      num_scenarios: number;
+    }) =>
+      fetchJSON<any>("/scenarios/simulate", {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
+  },
 };

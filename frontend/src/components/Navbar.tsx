@@ -9,12 +9,17 @@ import { Menu, X } from "lucide-react";
 const navItems = [
   { label: "Dashboard", href: "/" },
   { label: "Teams", href: "/teams" },
+  { label: "Comparison", href: "/comparison" },
   { label: "Groups", href: "/groups" },
   { label: "Knockout", href: "/knockout" },
   { label: "Bracket", href: "/bracket" },
+  { label: "Explorer", href: "/explorer" },
   { label: "Matches", href: "/matches" },
   { label: "Predictions", href: "/predictions" },
   { label: "Rankings", href: "/rankings" },
+  { label: "Scenarios", href: "/scenarios" },
+  { label: "Export", href: "/export" },
+  { label: "Reports", href: "/reports" },
   { label: "Simulations", href: "/simulations" },
   { label: "Calibration", href: "/calibration" },
 ];

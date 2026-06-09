@@ -7,12 +7,15 @@ from app.api import (
     analysis,
     calibration,
     calibration_refinement,
+    comparison,
     dashboard,
+    export,
     groups,
     health,
     matches,
     predictions,
     rankings,
+    scenarios,
     simulations,
     teams,
 )
@@ -75,6 +78,9 @@ app.include_router(calibration.router, prefix=settings.api_prefix)
 app.include_router(analysis.router, prefix=settings.api_prefix)
 app.include_router(calibration_refinement.router, prefix=settings.api_prefix)
 app.include_router(dashboard.router, prefix=settings.api_prefix)
+app.include_router(comparison.router, prefix=settings.api_prefix)
+app.include_router(export.router, prefix=settings.api_prefix)
+app.include_router(scenarios.router, prefix=settings.api_prefix)
 
 
 @app.on_event("startup")
