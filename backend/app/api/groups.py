@@ -13,10 +13,9 @@ router = APIRouter(prefix="/groups", tags=["Groups"])
 
 
 @router.get("", response_model=list[GroupResponse])
-@cached("groups:list")
 def list_groups(db: Session = Depends(get_db)):
     groups = db.query(Group).all()
-    return groups
+    return [{"id": g.id, "competition_id": g.competition_id, "name": g.name, "stage": g.stage} for g in groups]
 
 
 @router.get("/{group_id}", response_model=GroupDetail)

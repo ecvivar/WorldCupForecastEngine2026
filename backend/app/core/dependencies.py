@@ -26,6 +26,9 @@ class PaginationParams:
         self.page = page
         self.per_page = per_page
 
+    def __str__(self) -> str:
+        return f"page={self.page}|per_page={self.per_page}"
+
     @property
     def offset(self) -> int:
         return (self.page - 1) * self.per_page

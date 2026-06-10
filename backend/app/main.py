@@ -37,6 +37,7 @@ from app.core.logging import RequestLogMiddleware, setup_logging
 from app.core.middleware import MetricsMiddleware, SecurityHeadersMiddleware
 from app.core.rate_limit import limiter
 from app.core.startup import check_startup_readiness
+from app.core.warmup import warmup_all
 from app.db.session import engine, Base
 
 settings = get_settings()
@@ -71,6 +72,7 @@ async def lifespan(app: FastAPI):
         logger = logging.getLogger("startup")
         for err in report.errors:
             logger.error("Startup issue: %s", err)
+    warmup_all()
     yield
 
 

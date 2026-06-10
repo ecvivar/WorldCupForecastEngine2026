@@ -1,0 +1,224 @@
+{
+  "api_endpoints": [
+    {
+      "label": "Health Check",
+      "method": "GET",
+      "path": "/health",
+      "mean_ms": 7.12,
+      "p50_ms": 5.74,
+      "p95_ms": 12.62,
+      "p99_ms": 12.62,
+      "min_ms": 5.63,
+      "max_ms": 12.62,
+      "statuses": [
+        200
+      ],
+      "samples": 5
+    },
+    {
+      "label": "List Teams",
+      "method": "GET",
+      "path": "/api/v1/teams",
+      "mean_ms": 22.56,
+      "p50_ms": 14.16,
+      "p95_ms": 56.51,
+      "p99_ms": 56.51,
+      "min_ms": 13.66,
+      "max_ms": 56.51,
+      "statuses": [
+        200
+      ],
+      "samples": 5
+    },
+    {
+      "label": "List Groups",
+      "method": "GET",
+      "path": "/api/v1/groups",
+      "mean_ms": 10.4,
+      "p50_ms": 10.12,
+      "p95_ms": 11.36,
+      "p99_ms": 11.36,
+      "min_ms": 9.91,
+      "max_ms": 11.36,
+      "statuses": [
+        200
+      ],
+      "samples": 5
+    },
+    {
+      "label": "IGF Rankings",
+      "method": "GET",
+      "path": "/api/v1/rankings/igf",
+      "mean_ms": 74.38,
+      "p50_ms": 9.34,
+      "p95_ms": 335.06,
+      "p99_ms": 335.06,
+      "min_ms": 8.23,
+      "max_ms": 335.06,
+      "statuses": [
+        200
+      ],
+      "samples": 5
+    },
+    {
+      "label": "Dashboard",
+      "method": "GET",
+      "path": "/api/v1/dashboard",
+      "mean_ms": 74.21,
+      "p50_ms": 13.57,
+      "p95_ms": 318.15,
+      "p99_ms": 318.15,
+      "min_ms": 11.74,
+      "max_ms": 318.15,
+      "statuses": [
+        200
+      ],
+      "samples": 5
+    },
+    {
+      "label": "Full Predictions",
+      "method": "GET",
+      "path": "/api/v1/predictions",
+      "mean_ms": 240.43,
+      "p50_ms": 235.67,
+      "p95_ms": 253.11,
+      "p99_ms": 253.11,
+      "min_ms": 231.56,
+      "max_ms": 253.11,
+      "statuses": [
+        200
+      ],
+      "samples": 5
+    },
+    {
+      "label": "Match Calendar",
+      "method": "GET",
+      "path": "/api/v1/matches",
+      "mean_ms": 17.0,
+      "p50_ms": 16.84,
+      "p95_ms": 18.05,
+      "p99_ms": 18.05,
+      "min_ms": 16.03,
+      "max_ms": 18.05,
+      "statuses": [
+        200
+      ],
+      "samples": 5
+    },
+    {
+      "label": "Scenario Simulation",
+      "method": "POST",
+      "path": "/api/v1/scenarios/simulate",
+      "mean_ms": 1463.88,
+      "p50_ms": 248.86,
+      "p95_ms": 3894.47,
+      "p99_ms": 3894.47,
+      "min_ms": 248.3,
+      "max_ms": 3894.47,
+      "statuses": [
+        200
+      ],
+      "samples": 3
+    }
+  ],
+  "engine_operations": [
+    {
+      "label": "Single Match Prediction",
+      "mean_ms": 9.29,
+      "p50_ms": 9.08,
+      "p95_ms": 10.77,
+      "max_ms": 10.77,
+      "peak_memory_mb": 0.02,
+      "samples": 5
+    },
+    {
+      "label": "MC 100 simulations",
+      "mean_ms": 3.3,
+      "p50_ms": 3.13,
+      "p95_ms": 4.1,
+      "max_ms": 4.1,
+      "peak_memory_mb": 0.01,
+      "samples": 5
+    },
+    {
+      "label": "MC 500 simulations",
+      "mean_ms": 15.74,
+      "p50_ms": 14.92,
+      "p95_ms": 18.22,
+      "max_ms": 18.22,
+      "peak_memory_mb": 0.01,
+      "samples": 3
+    },
+    {
+      "label": "MC 1000 simulations",
+      "mean_ms": 28.55,
+      "p50_ms": 28.68,
+      "p95_ms": 28.8,
+      "max_ms": 28.8,
+      "peak_memory_mb": 0.01,
+      "samples": 3
+    },
+    {
+      "label": "MC Engine 100 sims (serial)",
+      "mean_ms": 385.21,
+      "p50_ms": 365.37,
+      "p95_ms": 437.58,
+      "max_ms": 437.58,
+      "peak_memory_mb": 0.02,
+      "samples": 3
+    },
+    {
+      "label": "Scenario (100 sims)",
+      "mean_ms": 286.17,
+      "p50_ms": 284.95,
+      "p95_ms": 291.22,
+      "max_ms": 291.22,
+      "peak_memory_mb": 0.01,
+      "samples": 3
+    }
+  ],
+  "cache_benchmarks": [
+    {
+      "label": "Cache: Teams List",
+      "path": "/api/v1/teams",
+      "cold_mean_ms": 15.48,
+      "warm_mean_ms": 14.67,
+      "improvement_pct": 5.2
+    },
+    {
+      "label": "Cache: Groups List",
+      "path": "/api/v1/groups",
+      "cold_mean_ms": 10.32,
+      "warm_mean_ms": 10.25,
+      "improvement_pct": 0.7
+    },
+    {
+      "label": "Cache: IGF Rankings",
+      "path": "/api/v1/rankings/igf",
+      "cold_mean_ms": 110.58,
+      "warm_mean_ms": 10.32,
+      "improvement_pct": 90.7
+    },
+    {
+      "label": "Cache: Dashboard",
+      "path": "/api/v1/dashboard",
+      "cold_mean_ms": 95.49,
+      "warm_mean_ms": 10.16,
+      "improvement_pct": 89.4
+    }
+  ],
+  "summary": {
+    "api_avg_ms": 238.75,
+    "api_p95_max_ms": 3894.47,
+    "engine_avg_ms": 121.38,
+    "prediction_ms": 9.29,
+    "mc_1000_ms": 28.55,
+    "mc_engine_100_ms": 385.21,
+    "cache_avg_improvement_pct": 46.5,
+    "targets": {
+      "api_lt_100ms": false,
+      "prediction_lt_20ms": true,
+      "mc_1000_lt_50ms": true
+    }
+  }
+}

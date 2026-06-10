@@ -2,6 +2,8 @@ import functools
 import inspect
 import logging
 
+from fastapi.encoders import jsonable_encoder
+
 from app.core.cache import get_cache
 
 logger = logging.getLogger("cache")
@@ -45,7 +47,7 @@ def cached(key_prefix: str, ttl: int | None = None):
                 return cached_val
 
             result = func(*args, **kwargs)
-            cache.set_sync(cache_key, result)
+            cache.set_sync(cache_key, jsonable_encoder(result))
             return result
 
         return wrapper

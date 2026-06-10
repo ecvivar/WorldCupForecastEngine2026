@@ -33,4 +33,4 @@ def get_fifa_rankings(
 @cached("rankings:igf")
 def get_igf_rankings(db: Session = Depends(get_db)):
     service = RankingService(db)
-    return service.compute_igf()
+    return [r.model_dump() for r in service.compute_igf()]

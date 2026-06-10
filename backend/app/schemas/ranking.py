@@ -29,6 +29,8 @@ class FifaRankingResponse(BaseModel):
 
 
 class IGFScoreResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     team_id: uuid.UUID
     team_name: str
     igf_score: float
