@@ -9,6 +9,7 @@ python-dotenv==1.0.1
 sqlalchemy==2.0.35
 alembic==1.13.0
 psycopg2-binary==2.9.9
+psycopg[binary]==3.2.1
 asyncpg==0.29.0
 
 # HTTP / Data Collection
@@ -24,6 +25,7 @@ numpy==1.26.4
 scipy==1.14.0
 polars==1.5.0
 numba==0.60.0
+scikit-learn==1.5.1
 
 # Auth / Security
 PyJWT==2.13.0

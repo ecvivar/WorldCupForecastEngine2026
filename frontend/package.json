@@ -9,7 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@next/swc-win32-x64-msvc": "^16.2.7",
     "@radix-ui/react-select": "^2.0.0",
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-tabs": "^1.0.4",
@@ -20,6 +19,9 @@
     "react-dom": "^18.3.0",
     "recharts": "^3.8.1",
     "tailwind-merge": "^2.3.0"
+  },
+  "optionalDependencies": {
+    "@next/swc-win32-x64-msvc": "^16.2.7"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",
