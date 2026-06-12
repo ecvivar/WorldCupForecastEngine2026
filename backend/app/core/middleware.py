@@ -17,7 +17,10 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
         response.headers["X-XSS-Protection"] = "1; mode=block"
-        response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline';"
+        cs_policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:;"
+        if request.url.path in ("/docs", "/redoc"):
+            cs_policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:;"
+        response.headers["Content-Security-Policy"] = cs_policy
         response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
         return response
 

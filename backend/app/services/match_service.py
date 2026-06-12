@@ -1,10 +1,13 @@
 import uuid
 
+import pandas as pd
 from sqlalchemy.orm import Session, joinedload
 
 from app.domain.entities import TeamEntity
+from app.engine.igf import IGFEngine
 from app.engine.match_prediction import MatchPredictionConfig, MatchPredictionEngine
 from app.models.elo_rating import EloRating
+from app.models.fifa_ranking import FifaRanking
 from app.models.match import Match
 from app.models.team import Team
 from app.models.xg_metrics import XGMetrics
@@ -15,6 +18,8 @@ from app.services.calibration_service import CalibrationService
 class MatchService:
     def __init__(self, db: Session):
         self.db = db
+        self.igf_engine = IGFEngine()
+        self._all_igf_scores: dict[str, dict] | None = None
         cal_config = CalibrationService.build_config_with_adjustments()
         self.prediction_engine = MatchPredictionEngine(config=cal_config)
 
@@ -43,23 +48,54 @@ class MatchService:
         self.db.refresh(match)
         return match
 
+    def _compute_all_igf_scores(self) -> dict[str, dict]:
+        if self._all_igf_scores is not None:
+            return self._all_igf_scores
+
+        teams = self.db.query(Team).all()
+        rows = []
+        for team in teams:
+            latest_elo = (
+                self.db.query(EloRating)
+                .filter(EloRating.team_id == team.id)
+                .order_by(EloRating.rating_date.desc())
+                .first()
+            )
+            latest_fifa = (
+                self.db.query(FifaRanking)
+                .filter(FifaRanking.team_id == team.id)
+                .order_by(FifaRanking.ranking_date.desc())
+                .first()
+            )
+            latest_xg = (
+                self.db.query(XGMetrics)
+                .filter(XGMetrics.team_id == team.id)
+                .order_by(XGMetrics.metric_date.desc())
+                .first()
+            )
+            rows.append({
+                "team_name": team.name,
+                "elo_score": latest_elo.elo_score if latest_elo else 1500,
+                "fifa_rank": latest_fifa.rank if latest_fifa else 100,
+                "xg_for": latest_xg.xg_for if latest_xg else 1.0,
+                "xg_against": latest_xg.xg_against if latest_xg else 1.0,
+            })
+
+        df = pd.DataFrame(rows)
+        self._all_igf_scores = self.igf_engine.compute_team_scores(df)
+        return self._all_igf_scores
+
     def _load_team_entity(self, team: Team) -> TeamEntity:
+        all_igf = self._compute_all_igf_scores()
+        igf_info = all_igf.get(team.name, {"igf_score": 50.0, "components": {}})
+
         latest_elo = (
             self.db.query(EloRating)
             .filter(EloRating.team_id == team.id)
             .order_by(EloRating.rating_date.desc())
             .first()
         )
-        latest_xg = (
-            self.db.query(XGMetrics)
-            .filter(XGMetrics.team_id == team.id)
-            .order_by(XGMetrics.metric_date.desc())
-            .first()
-        )
         elo_score = latest_elo.elo_score if latest_elo else 1500
-        xg_for = latest_xg.xg_for if latest_xg else 1.0
-        xg_against = latest_xg.xg_against if latest_xg else 1.0
-        igf_strength = min(100.0, max(0.0, (elo_score - 1300) / 8))
 
         return TeamEntity(
             id=team.id,
@@ -67,7 +103,7 @@ class MatchService:
             fifa_code=team.fifa_code,
             continent=team.continent,
             elo_score=elo_score,
-            igf_score=igf_strength,
+            igf_score=igf_info.get("igf_score", 50.0),
         )
 
     def get_predictions(self, match_id: uuid.UUID) -> MatchPrediction | None:

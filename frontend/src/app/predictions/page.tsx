@@ -19,7 +19,7 @@ export default function PredictionsPage() {
   useEffect(() => {
     Promise.all([
       api.predictions.list(),
-      api.matches.list(1, 200),
+      api.matches.list(1, 100),
     ])
       .then(async ([list, matches]) => {
         setPredictions(list);

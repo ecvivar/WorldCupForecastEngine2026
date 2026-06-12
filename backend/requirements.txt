@@ -1,5 +1,6 @@
 # Core
 fastapi==0.115.0
+fastapi-swagger==0.4.50
 uvicorn[standard]==0.30.0
 pydantic==2.9.0
 pydantic-settings==2.5.0

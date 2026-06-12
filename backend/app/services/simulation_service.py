@@ -3,6 +3,7 @@ import time
 import uuid
 from datetime import datetime
 
+import pandas as pd
 from sqlalchemy.orm import Session, joinedload
 
 from app.core.cache import get_cache
@@ -74,7 +75,7 @@ class SimulationService:
         return sim
 
     def _load_team_entities(self) -> tuple[list[TeamEntity], dict[uuid.UUID, str]]:
-        """Load all teams with actual Elo, FIFA, xG data and real group mappings."""
+        """Load all teams with full IGF scores and real group mappings."""
         teams = self.db.query(Team).all()
         group_standings = self.db.query(GroupStanding).options(
             joinedload(GroupStanding.group), joinedload(GroupStanding.team)
@@ -85,9 +86,8 @@ class SimulationService:
             if gs.team_id not in team_to_group:
                 team_to_group[gs.team_id] = gs.group.name
 
-        team_entities = []
-        group_mapping = {}
-
+        # Build DataFrame for full IGF computation
+        rows = []
         for team in teams:
             latest_elo = (
                 self.db.query(EloRating)
@@ -107,18 +107,35 @@ class SimulationService:
                 .order_by(XGMetrics.metric_date.desc())
                 .first()
             )
+            rows.append({
+                "team_name": team.name,
+                "elo_score": latest_elo.elo_score if latest_elo else 1500,
+                "fifa_rank": latest_fifa.rank if latest_fifa else 100,
+                "xg_for": latest_xg.xg_for if latest_xg else 1.0,
+                "xg_against": latest_xg.xg_against if latest_xg else 1.0,
+            })
 
-            elo_score = latest_elo.elo_score if latest_elo else 1500
-            igf_strength = min(1.0, max(0.0, (elo_score - 1300) / 800))
+        df = pd.DataFrame(rows)
+        all_igf = self.igf_engine.compute_team_scores(df)
+
+        # Index row data by team name for fast lookup
+        team_data_map = {r["team_name"]: r for r in rows}
+
+        team_entities = []
+        group_mapping = {}
+
+        for team in teams:
+            igf_info = all_igf.get(team.name, {"igf_score": 50.0})
+            data_row = team_data_map.get(team.name, {})
 
             entity = TeamEntity(
                 id=team.id,
                 name=team.name,
                 fifa_code=team.fifa_code,
                 continent=team.continent,
-                elo_score=elo_score,
-                fifa_rank=latest_fifa.rank if latest_fifa else 100,
-                igf_score=igf_strength,
+                elo_score=data_row.get("elo_score", 1500),
+                fifa_rank=data_row.get("fifa_rank", 100),
+                igf_score=igf_info.get("igf_score", 50.0),
             )
             team_entities.append(entity)
             group_mapping[team.id] = team_to_group.get(team.id, "A")

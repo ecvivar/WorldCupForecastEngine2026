@@ -12,7 +12,7 @@ export default function MatchesPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.matches.list(1, 104).then(setMatches).catch(() => {}).finally(() => setLoading(false));
+    api.matches.list(1, 100).then(setMatches).catch(() => {}).finally(() => setLoading(false));
   }, []);
 
   if (loading) return <SkeletonPage />;

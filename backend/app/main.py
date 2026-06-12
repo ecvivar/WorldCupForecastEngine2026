@@ -2,6 +2,7 @@ from contextlib import asynccontextmanager
 
 import sentry_sdk
 from fastapi import FastAPI
+from fastapi_swagger import patch_fastapi
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
@@ -14,6 +15,7 @@ from app.api import (
     calibration,
     calibration_refinement,
     comparison,
+    competitions,
     dashboard,
     export,
     groups,
@@ -81,11 +83,13 @@ app = FastAPI(
     version=settings.project_version,
     description="Professional World Cup 2026 Tournament Forecasting Engine — "
     "simulate match outcomes, group stages, and entire tournaments with Monte Carlo methods.",
-    docs_url="/docs",
+    docs_url=None,
     redoc_url="/redoc",
     openapi_url="/openapi.json",
     lifespan=lifespan,
 )
+
+patch_fastapi(app)
 
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
@@ -126,6 +130,7 @@ app.include_router(analysis.router, prefix=settings.api_prefix)
 app.include_router(calibration_refinement.router, prefix=settings.api_prefix)
 app.include_router(dashboard.router, prefix=settings.api_prefix)
 app.include_router(comparison.router, prefix=settings.api_prefix)
+app.include_router(competitions.router, prefix=settings.api_prefix)
 app.include_router(export.router, prefix=settings.api_prefix)
 app.include_router(scenarios.router, prefix=settings.api_prefix)
 

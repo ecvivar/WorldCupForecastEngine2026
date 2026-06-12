@@ -336,6 +336,16 @@ export interface RefinementReport {
 
 // ---- Group Analysis / Power Ranking ----
 
+export interface Competition {
+  id: string;
+  name: string;
+  season: string | null;
+  start_date: string | null;
+  end_date: string | null;
+  competition_type: string;
+  format: string;
+}
+
 export interface PowerRankingTeam {
   team_name: string;
   fifa_code: string | null;
@@ -439,6 +449,9 @@ export const api = {
   comparison: {
     compare: (teamAId: string, teamBId: string) =>
       fetchJSON<any>(`/comparison/teams/${teamAId}/${teamBId}`),
+  },
+  competitions: {
+    list: () => fetchJSON<Competition[]>("/competitions"),
   },
   scenarios: {
     simulate: (data: {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -14,13 +14,19 @@ export default function SimulationsPage() {
   const [details, setDetails] = useState<Record<string, SimulationDetail>>({});
   const [loading, setLoading] = useState(true);
   const [running, setRunning] = useState(false);
+  const competitionIdRef = useRef<string | null>(null);
 
   const loadSims = () => {
     setLoading(true);
-    api.simulations
-      .list()
-      .then(async (list) => {
+    Promise.all([
+      api.simulations.list(),
+      api.competitions.list(),
+    ])
+      .then(async ([list, comps]) => {
         setSims(list);
+        if (comps.length > 0 && !competitionIdRef.current) {
+          competitionIdRef.current = comps[0].id;
+        }
         const d: Record<string, SimulationDetail> = {};
         await Promise.all(
           list.map(async (s) => {
@@ -43,10 +49,11 @@ export default function SimulationsPage() {
   }, []);
 
   const runNew = async () => {
+    if (!competitionIdRef.current) return;
     setRunning(true);
     try {
       const created = await api.simulations.create({
-        competition_id: "00000000-0000-0000-0000-000000000001",
+        competition_id: competitionIdRef.current,
         num_simulations: 10000,
       });
       await api.simulations.run(created.id);

@@ -60,11 +60,10 @@ class Settings(BaseSettings):
     @field_validator("secret_key")
     @classmethod
     def validate_secret_key(cls, v: str) -> str:
-        if v == "change-me-in-production":
-            import warnings
-            warnings.warn(
-                "SECRET_KEY is set to default 'change-me-in-production'. "
-                "Set a strong SECRET_KEY in your .env file before deploying."
+        if v == "change-me-in-production" or len(v) < 32:
+            raise ValueError(
+                "SECRET_KEY must be at least 32 characters and not the default. "
+                "Generate a strong key with: python -c \"import secrets; print(secrets.token_urlsafe(32))\""
             )
         return v
 
