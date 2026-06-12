@@ -68,7 +68,7 @@ try:
             'D': ['Estados Unidos', 'Paraguay', 'Australia', 'Turquía'],
             'E': ['Alemania', 'Curazao', 'Costa de Marfil', 'Ecuador'],
             'F': ['Países Bajos', 'Japón', 'Suecia', 'Túnez'],
-            'G': ['Bélgica', 'Egipto', 'Irán', 'Nueva Zelanda'],
+            'G': ['Bélgica', 'Egipto', 'Nigeria', 'Nueva Zelanda'],
             'H': ['España', 'Cabo Verde', 'Arabia Saudita', 'Uruguay'],
             'I': ['Francia', 'Senegal', 'Irak', 'Noruega'],
             'J': ['Argentina', 'Argelia', 'Austria', 'Jordania'],
@@ -85,7 +85,7 @@ try:
             'Uruguay': ('URU', 'South America', 1900), 'Colombia': ('COL', 'South America', 1924),
             'Japón': ('JPN', 'Asia', 1921), 'Corea del Sur': ('KOR', 'Asia', 1928),
             'Australia': ('AUS', 'Oceania', 1961), 'Marruecos': ('MAR', 'Africa', 1955),
-            'Senegal': ('SEN', 'Africa', 1960),
+            'Senegal': ('SEN', 'Africa', 1960), 'Nigeria': ('NGA', 'Africa', 1945),
             'Egipto': ('EGY', 'Africa', 1921), 'Costa de Marfil': ('CIV', 'Africa', 1960),
             'Ghana': ('GHA', 'Africa', 1957), 'Croacia': ('CRO', 'Europe', 1912),
             'Suiza': ('SUI', 'Europe', 1895), 'Suecia': ('SWE', 'Europe', 1904),
@@ -102,6 +102,33 @@ try:
             'RD Congo': ('COD', 'Africa', 1919), 'Nueva Zelanda': ('NZL', 'Oceania', 1891),
             'Argelia': ('ALG', 'Africa', 1962), 'Panamá': ('PAN', 'North America', 1937),
         }
+        TEAM_STRENGTH = {
+            'Argentina': (2084, 1, 2110, 2.3, 0.6), 'Brasil': (2070, 2, 2070, 2.4, 0.6),
+            'Francia': (2065, 3, 2040, 2.2, 0.7), 'Inglaterra': (2055, 4, 2010, 2.1, 0.7),
+            'España': (2048, 5, 1990, 2.2, 0.8), 'Alemania': (2035, 6, 1960, 2.0, 0.8),
+            'Portugal': (2028, 7, 1940, 2.0, 0.8), 'Países Bajos': (2020, 8, 1920, 2.0, 0.8),
+            'Bélgica': (2010, 9, 1900, 2.0, 0.9), 'Croacia': (1980, 10, 1870, 1.8, 0.9),
+            'Uruguay': (1970, 11, 1850, 1.7, 0.9), 'Colombia': (1960, 12, 1830, 1.7, 0.9),
+            'Japón': (1950, 13, 1810, 1.6, 1.0), 'Corea del Sur': (1940, 14, 1790, 1.6, 1.0),
+            'Marruecos': (1930, 15, 1770, 1.5, 1.0), 'Senegal': (1920, 16, 1750, 1.5, 1.0),
+            'Suiza': (1910, 17, 1730, 1.5, 1.1), 'Estados Unidos': (1900, 18, 1710, 1.5, 1.1),
+            'México': (1890, 19, 1690, 1.5, 1.1), 'Nigeria': (1880, 20, 1670, 1.5, 1.1),
+            'Costa de Marfil': (1870, 21, 1650, 1.4, 1.1), 'Ghana': (1860, 22, 1630, 1.4, 1.2),
+            'Egipto': (1850, 23, 1610, 1.4, 1.2), 'Túnez': (1840, 24, 1590, 1.4, 1.2),
+            'Ecuador': (1830, 25, 1570, 1.3, 1.2), 'Paraguay': (1820, 26, 1550, 1.3, 1.3),
+            'Arabia Saudita': (1810, 27, 1530, 1.3, 1.3), 'Australia': (1800, 28, 1510, 1.3, 1.3),
+            'Argelia': (1790, 29, 1490, 1.3, 1.3), 'Noruega': (1780, 30, 1470, 1.3, 1.3),
+            'Suecia': (1770, 31, 1450, 1.2, 1.4), 'Turquía': (1760, 32, 1430, 1.2, 1.4),
+            'Escocia': (1750, 33, 1410, 1.2, 1.4), 'Austria': (1740, 34, 1390, 1.2, 1.4),
+            'República Checa': (1730, 35, 1370, 1.2, 1.5), 'Irán': (1720, 36, 1350, 1.1, 1.5),
+            'Sudáfrica': (1710, 37, 1330, 1.1, 1.5), 'Canadá': (1700, 38, 1310, 1.1, 1.5),
+            'Panamá': (1690, 39, 1290, 1.1, 1.5), 'Bosnia-Herzegovina': (1680, 40, 1270, 1.0, 1.6),
+            'Qatar': (1670, 41, 1250, 1.0, 1.6), 'Cabo Verde': (1660, 42, 1230, 1.0, 1.6),
+            'Haití': (1650, 43, 1210, 1.0, 1.6), 'Irak': (1640, 44, 1190, 1.0, 1.7),
+            'Jordania': (1630, 45, 1170, 0.9, 1.7), 'Uzbekistán': (1620, 46, 1150, 0.9, 1.7),
+            'RD Congo': (1610, 47, 1130, 0.9, 1.7), 'Nueva Zelanda': (1600, 48, 1110, 0.9, 1.8),
+            'Curazao': (1550, 49, 1050, 0.8, 1.8),
+        }
 
         comp = Competition(id=uuid.uuid4(), name='FIFA World Cup 2026', season='2026',
                            start_date=date(2026, 6, 11), end_date=date(2026, 7, 19),
@@ -113,12 +140,14 @@ try:
         for group_letter, team_names in OFFICIAL_GROUPS.items():
             for name in team_names:
                 meta = TEAM_META.get(name, (None, 'Unknown', None))
+                s = TEAM_STRENGTH.get(name, (1500, 100, 1000, 1.0, 1.5))
+                elo_score, fifa_rank, fifa_points, xg_for, xg_against = s
                 t = Team(name=name, fifa_code=meta[0], continent=meta[1], founded_year=meta[2], is_national_team=True)
                 db.add(t)
                 db.flush()
-                db.add(EloRating(team_id=t.id, rating_date=date.today(), elo_score=1500 + (48 - len(team_objects)) * 20, rank=len(team_objects) + 1))
-                db.add(FifaRanking(team_id=t.id, ranking_date=date.today(), rank=len(team_objects) + 1, previous_rank=len(team_objects) + 2, total_points=1800.0 - len(team_objects) * 15, confederation=meta[1]))
-                db.add(XGMetrics(team_id=t.id, metric_date=date.today(), xg_for=2.5 - len(team_objects) * 0.04, xg_against=0.8 + len(team_objects) * 0.03, xg_diff=1.7 - len(team_objects) * 0.07))
+                db.add(EloRating(team_id=t.id, rating_date=date.today(), elo_score=elo_score, rank=fifa_rank))
+                db.add(FifaRanking(team_id=t.id, ranking_date=date.today(), rank=fifa_rank, previous_rank=fifa_rank + 1, total_points=fifa_points, confederation=meta[1]))
+                db.add(XGMetrics(team_id=t.id, metric_date=date.today(), xg_for=xg_for, xg_against=xg_against, xg_diff=round(xg_for - xg_against, 2)))
                 team_objects[name] = t
 
         groups = {}
@@ -132,15 +161,17 @@ try:
                 db.add(GroupStanding(group_id=grp.id, team_id=tm.id, position=pos, played=0, won=0, drawn=0, lost=0, goals_for=0, goals_against=0, goal_difference=0, points=0, qualified=False))
 
         match_date = datetime(2026, 6, 11, 12, 0)
+        matches_bulk = []
         for group_letter, team_names in OFFICIAL_GROUPS.items():
             gt = [team_objects[n] for n in team_names]
             for i in range(len(gt)):
                 for j in range(i + 1, len(gt)):
-                    db.add(Match(competition_id=comp.id, home_team_id=gt[i].id, away_team_id=gt[j].id, match_date=match_date, stage='group_stage', group_name=group_letter))
+                    matches_bulk.append(Match(competition_id=comp.id, home_team_id=gt[i].id, away_team_id=gt[j].id, match_date=match_date, stage='group_stage', group_name=group_letter))
                     match_date += timedelta(hours=4)
                     if match_date.hour >= 22:
                         match_date += timedelta(days=1)
                         match_date = match_date.replace(hour=10)
+        db.bulk_save_objects(matches_bulk)
 
         db.commit()
         print(f'Seeded {len(team_objects)} teams across 12 groups (72 matches)')

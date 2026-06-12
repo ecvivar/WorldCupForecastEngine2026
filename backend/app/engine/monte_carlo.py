@@ -4,11 +4,10 @@ Monte Carlo Tournament Simulation Engine.
 Simulates the full World Cup 2026 tournament:
 - 48 teams, 12 groups of 4
 - Top 2 per group + 8 best third-placed → 32 in Round of 32
-- Complete bracket: R32 → R16 → QF → SF → Final
+- Official FIFA 2026 bracket: R32 → R16 → QF → SF → Final
 - FIFA tiebreakers: points, GD, GF, H2H points, H2H GD, H2H GF
 - 100,000+ simulations with Numba JIT acceleration
-
-Outputs per-team stage probabilities and group position distribution.
+- Reproducible via explicit numpy.random.seed inside numba
 """
 
 import logging
@@ -30,16 +29,89 @@ TEAMS_PER_GROUP = 4
 NUM_BEST_THIRD = 8
 ROUND_OF_32_SIZE = 32
 
+# Group letter -> index (A=0, B=1, ..., L=11)
+# Official FIFA 2026 Round of 32 pairing rules:
+# M73:  2A vs 2B
+# M74:  1E vs 3rd(AB CDF)
+# M75:  1F vs 2C
+# M76:  1C vs 2F
+# M77:  1I vs 3rd(CDFGH)
+# M78:  2E vs 2I
+# M79:  1A vs 3rd(CEFHI)
+# M80:  1L vs 3rd(EHIJK)
+# M81:  1D vs 3rd(BEFIJ)
+# M82:  1G vs 3rd(AEHIJ)
+# M83:  2K vs 2L
+# M84:  1H vs 2J
+# M85:  1B vs 3rd(EFGIJ)
+# M86:  1J vs 2H
+# M87:  1K vs 3rd(DEIJL)
+# M88:  2D vs 2G
+
+# R32 bracket pairs: (group letter or special, type)
+# type: 'ww' = winner, 'rr' = runner-up, 'wr' = winner vs runner-up,
+#        'w3' = winner vs third, 'r3' = runner-up vs third
+
+R32_PAIRINGS = [
+    # (match_idx, type, home_spec, away_spec)
+    # match_idx is the pair index in the bracket array (0-15)
+    # home_spec: 'Wx' = group x winner, 'Rx' = group x runner-up
+    # away_spec: same, or '3[x...]' = third-placed from listed groups
+    (0, 'rr', 'A', 'B'),         # M73: 2A vs 2B
+    (1, 'w3', 'E', 'ABCDF'),     # M74: 1E vs 3rd(A/B/C/D/F)
+    (2, 'wr', 'F', 'C'),         # M75: 1F vs 2C
+    (3, 'wr', 'C', 'F'),         # M76: 1C vs 2F
+    (4, 'w3', 'I', 'CDFGH'),     # M77: 1I vs 3rd(C/D/F/G/H)
+    (5, 'rr', 'E', 'I'),         # M78: 2E vs 2I
+    (6, 'w3', 'A', 'CEFHI'),     # M79: 1A vs 3rd(C/E/F/H/I)
+    (7, 'w3', 'L', 'EHIJK'),     # M80: 1L vs 3rd(E/H/I/J/K)
+    (8, 'w3', 'D', 'BEFIJ'),     # M81: 1D vs 3rd(B/E/F/I/J)
+    (9, 'w3', 'G', 'AEHIJ'),     # M82: 1G vs 3rd(A/E/H/I/J)
+    (10, 'rr', 'K', 'L'),        # M83: 2K vs 2L
+    (11, 'wr', 'H', 'J'),        # M84: 1H vs 2J
+    (12, 'w3', 'B', 'EFGIJ'),    # M85: 1B vs 3rd(E/F/G/I/J)
+    (13, 'wr', 'J', 'H'),        # M86: 1J vs 2H
+    (14, 'w3', 'K', 'DEIJL'),    # M87: 1K vs 3rd(D/E/I/J/L)
+    (15, 'rr', 'D', 'G'),        # M88: 2D vs 2G
+]
+
+# R16 pairing: which R32 match winners meet in R16
+# Each entry: (r32_pair_a, r32_pair_b)
+R16_PAIRINGS = [
+    (1, 4),   # M89: W74 vs W77
+    (0, 2),   # M90: W73 vs W75
+    (3, 5),   # M91: W76 vs W78
+    (6, 7),   # M92: W79 vs W80
+    (10, 11), # M93: W83 vs W84
+    (8, 9),   # M94: W81 vs W82
+    (13, 15), # M95: W86 vs W88
+    (12, 14), # M96: W85 vs W87
+]
+
+# QF pairings: which R16 winners meet in QF
+QF_PAIRINGS = [
+    (0, 1),  # W97: M89 vs M90
+    (2, 3),  # W98: M91 vs M92
+    (4, 5),  # W99: M93 vs M94
+    (6, 7),  # W100: M95 vs M96
+]
+
+# SF pairings: which QF winners meet in SF
+SF_PAIRINGS = [
+    (0, 1),  # W101: W97 vs W98
+    (2, 3),  # W102: W99 vs W100
+]
+
 
 @njit
 def simulate_group_stage_numba(
     strengths: np.ndarray,
     assignments: np.ndarray,
+    seed: int = -1,
 ) -> np.ndarray:
-    """
-    Simulate all group matches.
-    Returns (num_teams, 5): [points, gd, gf, ga, group_id]
-    """
+    if seed >= 0:
+        np.random.seed(seed)
+
     num_teams = strengths.shape[0]
     results = np.zeros((num_teams, 5), dtype=np.float64)
 
@@ -74,7 +146,6 @@ def simulate_group_stage_numba(
                 results[ti, 3] += goals_j
                 results[tj, 3] += goals_i
 
-        # Set group id
         for idx in team_indices:
             results[idx, 4] = g
 
@@ -89,13 +160,6 @@ def rank_group_fifa(
     group_ga: np.ndarray,
     team_indices: np.ndarray,
 ) -> np.ndarray:
-    """
-    Rank teams within a group using FIFA tiebreakers:
-    1. Points
-    2. Goal Difference
-    3. Goals For
-    4. Goals Against (implicit in GD)
-    """
     n = len(team_indices)
     order = np.arange(n)
 
@@ -129,13 +193,6 @@ def rank_group_fifa(
 def simulate_knockout_match(
     strength_a: float, strength_b: float
 ) -> tuple[int, int, int]:
-    """
-    Simulate a knockout match with extra time and penalties.
-    Returns (goals_a, goals_b, penalty_winner):
-      penalty_winner = -1 if decided in regulation/extra time
-      penalty_winner =  0 if team A won on penalties
-      penalty_winner =  1 if team B won on penalties
-    """
     lambda_a = max(0.1, np.exp(strength_a - strength_b))
     lambda_b = max(0.1, np.exp(strength_b - strength_a))
 
@@ -145,7 +202,6 @@ def simulate_knockout_match(
     if ga != gb:
         return ga, gb, -1
 
-    # Extra time: 30 min -> ~1/3 intensity
     eta_a = max(0.05, np.exp(strength_a - strength_b) * 0.33)
     eta_b = max(0.05, np.exp(strength_b - strength_a) * 0.33)
 
@@ -155,7 +211,6 @@ def simulate_knockout_match(
     if ga != gb:
         return ga, gb, -1
 
-    # Penalties: 50/50
     pen_winner = 0 if np.random.random() < 0.5 else 1
     return ga, gb, pen_winner
 
@@ -165,12 +220,6 @@ def select_best_third_numba(
     third_placed: np.ndarray,
     third_teams: np.ndarray,
 ) -> np.ndarray:
-    """
-    Select the best 8 third-placed teams from 12 groups.
-    third_placed: (num_groups, 3) = [points, gd, gf]
-    third_teams: (num_groups,) = team_index
-    Returns: selected team indices (8,)
-    """
     num_groups = third_placed.shape[0]
     order = np.arange(num_groups)
 
@@ -203,7 +252,6 @@ def select_best_third_numba(
 def run_knockout_round(
     bracket: np.ndarray, strengths: np.ndarray
 ) -> np.ndarray:
-    """Simulate a single knockout round. Returns winners array."""
     n = bracket.shape[0]
     winners = np.empty(n // 2, dtype=np.int64)
 
@@ -222,6 +270,131 @@ def run_knockout_round(
     return winners
 
 
+def _build_fifa_2026_bracket(
+    all_winners: np.ndarray,
+    all_runners_up: np.ndarray,
+    best_third: np.ndarray,
+    third_placed_teams: np.ndarray,
+    third_placed_stats: np.ndarray,
+) -> np.ndarray:
+    """
+    Build the Round of 32 bracket according to official FIFA 2026 pairings.
+
+    w3 slots are assigned the best third-placed teams in ranking order,
+    respecting that teams from the same group as the winner are excluded.
+    Returns bracket array of shape (32,) with team indices.
+    """
+    bracket = np.full(32, -1, dtype=np.int64)
+
+    # Identify which group each best-third team belongs to
+    best_third_group = np.full(NUM_BEST_THIRD, -1, dtype=np.int64)
+    for idx_in_best, t in enumerate(best_third):
+        if t >= 0:
+            for g in range(NUM_GROUPS):
+                if third_placed_teams[g] == t:
+                    best_third_group[idx_in_best] = g
+                    break
+
+    w3_slot_idx = 0
+
+    for pair_idx, match_type, home_spec, away_spec in R32_PAIRINGS:
+        pos = 2 * pair_idx
+
+        if match_type == 'rr':
+            g_home = ord(home_spec) - ord('A')
+            g_away = ord(away_spec) - ord('A')
+            home_team = int(all_runners_up[g_home]) if g_home < len(all_runners_up) else -1
+            away_team = int(all_runners_up[g_away]) if g_away < len(all_runners_up) else -1
+        elif match_type == 'wr':
+            g_winner = ord(home_spec) - ord('A')
+            g_runner = ord(away_spec) - ord('A')
+            home_team = int(all_winners[g_winner]) if g_winner < len(all_winners) else -1
+            away_team = int(all_runners_up[g_runner]) if g_runner < len(all_runners_up) else -1
+        elif match_type == 'w3':
+            g_winner = ord(home_spec) - ord('A')
+            home_team = int(all_winners[g_winner]) if g_winner < len(all_winners) else -1
+            # Assign the next-best third-placed team that is NOT from the winner's group
+            away_team = -1
+            for candidate_idx in range(w3_slot_idx, NUM_BEST_THIRD):
+                candidate_team = int(best_third[candidate_idx])
+                candidate_group = best_third_group[candidate_idx]
+                if candidate_team >= 0 and candidate_group != g_winner:
+                    away_team = candidate_team
+                    # Swap so this candidate is consumed
+                    if candidate_idx != w3_slot_idx:
+                        best_third[candidate_idx], best_third[w3_slot_idx] = best_third[w3_slot_idx], best_third[candidate_idx]
+                        best_third_group[candidate_idx], best_third_group[w3_slot_idx] = best_third_group[w3_slot_idx], best_third_group[candidate_idx]
+                    w3_slot_idx += 1
+                    break
+            # If no candidate found (should not happen with 8 teams and 8 w3 slots),
+            # fall back to best available
+            if away_team < 0 and w3_slot_idx < NUM_BEST_THIRD:
+                away_team = int(best_third[w3_slot_idx])
+                w3_slot_idx += 1
+        else:
+            continue
+
+        if pos < 32:
+            bracket[pos] = home_team
+        if pos + 1 < 32:
+            bracket[pos + 1] = away_team
+
+    return bracket
+
+
+def _run_knockout_tree(
+    bracket_r32: np.ndarray,
+    strengths: np.ndarray,
+    stages: np.ndarray,
+) -> None:
+    """
+    Run the full knockout tree according to official FIFA 2026 bracket.
+    Updates stages in-place.
+    """
+    r32_winners = run_knockout_round(bracket_r32, strengths)
+    for idx in r32_winners:
+        if idx >= 0:
+            stages[idx] = 2
+
+    r16_pairs = np.empty(16, dtype=np.int64)
+    for i, (a, b) in enumerate(R16_PAIRINGS):
+        r16_pairs[2 * i] = r32_winners[a] if a < len(r32_winners) and r32_winners[a] >= 0 else -1
+        r16_pairs[2 * i + 1] = r32_winners[b] if b < len(r32_winners) and r32_winners[b] >= 0 else -1
+
+    r16_winners = run_knockout_round(r16_pairs, strengths)
+    for idx in r16_winners:
+        if idx >= 0:
+            stages[idx] = 3
+
+    qf_pairs = np.empty(8, dtype=np.int64)
+    for i, (a, b) in enumerate(QF_PAIRINGS):
+        qf_pairs[2 * i] = r16_winners[a] if a < len(r16_winners) and r16_winners[a] >= 0 else -1
+        qf_pairs[2 * i + 1] = r16_winners[b] if b < len(r16_winners) and r16_winners[b] >= 0 else -1
+
+    qf_winners = run_knockout_round(qf_pairs, strengths)
+    for idx in qf_winners:
+        if idx >= 0:
+            stages[idx] = 4
+
+    sf_pairs = np.empty(4, dtype=np.int64)
+    for i, (a, b) in enumerate(SF_PAIRINGS):
+        sf_pairs[2 * i] = qf_winners[a] if a < len(qf_winners) and qf_winners[a] >= 0 else -1
+        sf_pairs[2 * i + 1] = qf_winners[b] if b < len(qf_winners) and qf_winners[b] >= 0 else -1
+
+    sf_winners = run_knockout_round(sf_pairs, strengths)
+    for idx in sf_winners:
+        if idx >= 0:
+            stages[idx] = 5
+
+    if len(sf_winners) >= 2 and sf_winners[0] >= 0 and sf_winners[1] >= 0:
+        final_pair = np.empty(2, dtype=np.int64)
+        final_pair[0] = sf_winners[0]
+        final_pair[1] = sf_winners[1]
+        final_winner = run_knockout_round(final_pair, strengths)
+        if len(final_winner) >= 1 and final_winner[0] >= 0:
+            stages[final_winner[0]] = 6
+
+
 def run_single_tournament_py(
     strengths: np.ndarray,
     assignments: np.ndarray,
@@ -229,16 +402,13 @@ def run_single_tournament_py(
     seed: int | None = None,
 ) -> np.ndarray:
     """
-    Run a single complete tournament simulation.
+    Run a single complete tournament simulation with official FIFA 2026 bracket.
     Returns (num_teams,) array: max stage reached
     0=group, 1=R32, 2=R16, 3=QF, 4=SF, 5=Final, 6=Winner
-    Plus extra info encoded later.
     """
-    if seed is not None:
-        np.random.seed(seed)
-
+    numba_seed = seed if seed is not None else -1
     stages = np.zeros(num_teams, dtype=np.int32)
-    group_results = simulate_group_stage_numba(strengths, assignments)
+    group_results = simulate_group_stage_numba(strengths, assignments, numba_seed)
 
     all_winners = np.empty(NUM_GROUPS, dtype=np.int64)
     all_runners_up = np.empty(NUM_GROUPS, dtype=np.int64)
@@ -277,78 +447,26 @@ def run_single_tournament_py(
         third_placed_stats[g, 1] = group_results[third_pl, 1]
         third_placed_stats[g, 2] = group_results[third_pl, 2]
 
-    # Select best 8 third-placed
     best_third = select_best_third_numba(third_placed_stats, third_placed_teams)
 
-    # Reset non-qualifying third-placed to group stage elimination
     all_third_placed = third_placed_teams.copy()
     for g in range(NUM_GROUPS):
         t = third_placed_teams[g]
         if t >= 0:
-            stages[t] = 0  # default: group elimination
+            stages[t] = 0
     for t in best_third:
         if t >= 0:
-            stages[t] = 1  # qualified for R32
+            stages[t] = 1
 
     if NUM_GROUPS < 1:
         return stages
 
-    # Build Round of 32 bracket
-    # FIFA 2026: 12 group winners + 12 runners-up + 8 best third = 32 teams
-    valid_winners = all_winners[all_winners >= 0]
-    valid_runners = all_runners_up[all_runners_up >= 0]
-    valid_third = best_third[best_third >= 0]
+    bracket_r32 = _build_fifa_2026_bracket(
+        all_winners, all_runners_up, best_third,
+        third_placed_teams, third_placed_stats,
+    )
 
-    bracket_r32 = np.empty(ROUND_OF_32_SIZE, dtype=np.int64)
-
-    # Pair 1-12: winners vs runners-up
-    n_wr_pairs = min(len(valid_winners), len(valid_runners))
-    for i in range(n_wr_pairs):
-        bracket_r32[2 * i] = valid_winners[i]
-        bracket_r32[2 * i + 1] = valid_runners[i]
-
-    # Pair 13-16: best third-placed vs best third-placed
-    offset = 2 * n_wr_pairs
-    n_third = len(valid_third)
-    for i in range(0, n_third, 2):
-        pos = offset + i
-        if pos + 1 < ROUND_OF_32_SIZE:
-            bracket_r32[pos] = valid_third[i]
-            bracket_r32[pos + 1] = valid_third[i + 1] if i + 1 < n_third else -1
-
-    n_filled = offset + n_third - (n_third % 2)
-    for i in range(n_filled, ROUND_OF_32_SIZE):
-        bracket_r32[i] = -1
-
-    # R32
-    r32_winners = run_knockout_round(bracket_r32, strengths)
-    for idx in r32_winners:
-        if idx >= 0:
-            stages[idx] = 2
-
-    # R16
-    r16_winners = run_knockout_round(r32_winners, strengths)
-    for idx in r16_winners:
-        if idx >= 0:
-            stages[idx] = 3
-
-    # QF
-    qf_winners = run_knockout_round(r16_winners, strengths)
-    for idx in qf_winners:
-        if idx >= 0:
-            stages[idx] = 4
-
-    # SF
-    sf_winners = run_knockout_round(qf_winners, strengths)
-    for idx in sf_winners:
-        if idx >= 0:
-            stages[idx] = 5
-
-    # Final
-    if len(sf_winners) >= 2 and sf_winners[0] >= 0 and sf_winners[1] >= 0:
-        final_winner = run_knockout_round(sf_winners, strengths)
-        if len(final_winner) >= 1 and final_winner[0] >= 0:
-            stages[final_winner[0]] = 6
+    _run_knockout_tree(bracket_r32, strengths, stages)
 
     return stages
 
@@ -396,21 +514,22 @@ class MonteCarloEngine:
         results = np.zeros((num_teams, 10), dtype=np.int32)
 
         for sim in range(n_sims):
-            stages = run_single_tournament_py(strengths, assignments, num_teams)
+            seed = self.config.random_seed + sim if self.config.random_seed is not None else None
+            stages = run_single_tournament_py(strengths, assignments, num_teams, seed=seed)
             for t in range(num_teams):
                 stage = stages[t]
                 if stage >= 1:
-                    results[t, 0] += 1  # R32
+                    results[t, 0] += 1
                 if stage >= 2:
-                    results[t, 1] += 1  # R16
+                    results[t, 1] += 1
                 if stage >= 3:
-                    results[t, 2] += 1  # QF
+                    results[t, 2] += 1
                 if stage >= 4:
-                    results[t, 3] += 1  # SF
+                    results[t, 3] += 1
                 if stage >= 5:
-                    results[t, 4] += 1  # Final
+                    results[t, 4] += 1
                 if stage >= 6:
-                    results[t, 5] += 1  # Winner
+                    results[t, 5] += 1
 
             if (sim + 1) % 10000 == 0:
                 logger.info(f"  {sim + 1}/{n_sims} simulations completed")

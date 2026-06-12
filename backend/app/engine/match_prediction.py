@@ -3,7 +3,7 @@ Match Prediction Engine.
 
 Implements:
 - Poisson regression (independent goals)
-- Dixon-Coles (low-score correction)
+- Dixon-Coles (low-score correction) with data-driven rho estimation
 - Elo-based probability
 - Bayesian updating (prior + observed)
 - Confidence Index, Surprise Risk, betting markets
@@ -16,6 +16,7 @@ from dataclasses import dataclass
 from math import exp, factorial
 
 import numpy as np
+from scipy.optimize import minimize_scalar
 
 from app.domain.entities import ConfidenceLevel, MatchPredictionResult, TeamEntity
 
@@ -31,6 +32,18 @@ class MatchPredictionConfig:
     bayesian_prior_strength: float = 2.0
     top_n_scores: int = 10
     calibration_adjustments: dict | None = None
+
+    @classmethod
+    def with_estimated_rho(
+        cls,
+        historical_matches: list,
+        **overrides,
+    ) -> "MatchPredictionConfig":
+        """Create config with Dixon-Coles rho estimated from historical data."""
+        rho = MatchPredictionEngine.estimate_dixon_coles_rho(historical_matches)
+        base = cls(dixon_coles_tau=rho, **overrides)
+        logger.info(f"MatchPredictionConfig: dixon_coles_tau={rho} (estimated from {len(historical_matches)} matches)")
+        return base
 
 
 class MatchPredictionEngine:
@@ -279,6 +292,77 @@ class MatchPredictionEngine:
     def _top_n_scores(score_probs: dict[str, float], n: int = 10) -> list[tuple[str, float]]:
         sorted_scores = sorted(score_probs.items(), key=lambda x: x[1], reverse=True)
         return [(s, round(p, 6)) for s, p in sorted_scores[:n]]
+
+    @staticmethod
+    def estimate_dixon_coles_rho(
+        historical_matches: list,
+        elo_home_key: str = "home_elo",
+        elo_away_key: str = "away_elo",
+        goals_home_key: str = "home_goals",
+        goals_away_key: str = "away_goals",
+        home_advantage: float = 100.0,
+    ) -> float:
+        """
+        Estimate Dixon-Coles rho from historical match data via MLE.
+
+        Rho adjusts low-scoring outcomes (0-0, 0-1, 1-0, 1-1) to account
+        for the empirical observation that these scores occur more/less
+        frequently than independent Poisson models predict.
+
+        Uses Brent's method to maximize log-likelihood in range [-0.2, 0.2].
+        """
+        if not historical_matches:
+            logger.warning("No historical matches provided, using default rho=0.1")
+            return 0.1
+
+        def _neg_log_likelihood(rho: float) -> float:
+            nll = 0.0
+            for m in historical_matches:
+                elo_h = getattr(m, elo_home_key, 0) if not isinstance(m, dict) else m.get(elo_home_key, 0)
+                elo_a = getattr(m, elo_away_key, 0) if not isinstance(m, dict) else m.get(elo_away_key, 0)
+                gh = getattr(m, goals_home_key, 0) if not isinstance(m, dict) else m.get(goals_home_key, 0)
+                ga = getattr(m, goals_away_key, 0) if not isinstance(m, dict) else m.get(goals_away_key, 0)
+
+                if elo_h == 0 and elo_a == 0:
+                    continue
+
+                ha = home_advantage
+                exp_h = 1.0 / (1.0 + 10.0 ** ((elo_a - elo_h + ha) / 400.0))
+                exp_a = 1.0 - exp_h
+
+                lambda_h = max(0.1, (exp_h * 3) if exp_h > 0 else 0.1)
+                lambda_a = max(0.1, (exp_a * 3) if exp_a > 0 else 0.1)
+
+                prob_poisson = (lambda_h ** gh) * exp(-lambda_h) / factorial(gh) \
+                             * (lambda_a ** ga) * exp(-lambda_a) / factorial(ga)
+
+                if prob_poisson <= 0:
+                    continue
+
+                if (gh == 0 and ga == 0) or (gh == 1 and ga == 1):
+                    adjusted = prob_poisson * (1 - rho)
+                elif (gh == 0 and ga == 1) or (gh == 1 and ga == 0):
+                    adjusted = prob_poisson * (1 + rho)
+                else:
+                    adjusted = prob_poisson
+
+                if adjusted > 0:
+                    nll -= np.log(adjusted)
+
+            return nll if np.isfinite(nll) else 1e10
+
+        result = minimize_scalar(
+            _neg_log_likelihood,
+            bounds=(-0.2, 0.2),
+            method='bounded',
+        )
+
+        estimated_rho = result.x if result.success else 0.1
+        estimated_rho = max(-0.2, min(0.2, estimated_rho))
+
+        logger.info(f"Dixon-Coles rho estimated: {estimated_rho:.4f} "
+                     f"(success={result.success}, nfev={result.nfev})")
+        return round(estimated_rho, 4)
 
     @staticmethod
     def _apply_dixon_coles(score_probs: dict[str, float], rho: float) -> dict:

@@ -58,6 +58,8 @@ class RankingService:
     def compute_igf(self) -> list[IGFScoreResponse]:
         teams = self.db.query(Team).all()
         rows = []
+        max_elo = 2100.0
+        max_fifa_rank = 50
         for team in teams:
             latest_elo = (
                 self.db.query(EloRating)
@@ -77,13 +79,29 @@ class RankingService:
                 .order_by(XGMetrics.metric_date.desc())
                 .first()
             )
+
+            elo_score = latest_elo.elo_score if latest_elo else 1500
+            fifa_rank = latest_fifa.rank if latest_fifa else 100
+
+            # Derived IGF factors from existing data
+            recent_form = max(0.1, elo_score / max_elo)
+            wc_experience = max(0.1, 0.3 + (team.founded_year / 2026) * 0.5) if team.founded_year else 0.3
+            squad_value = max(0.1, 1.0 - (fifa_rank / max_fifa_rank))
+            opponent_strength = 0.5
+            tournament_history = max(0.1, 1.0 - (fifa_rank / max_fifa_rank))
+
             rows.append(
                 {
                     "team_name": team.name,
-                    "elo_score": latest_elo.elo_score if latest_elo else 1500,
-                    "fifa_rank": latest_fifa.rank if latest_fifa else 100,
+                    "elo_score": elo_score,
+                    "fifa_rank": fifa_rank,
                     "xg_for": latest_xg.xg_for if latest_xg else 1.0,
                     "xg_against": latest_xg.xg_against if latest_xg else 1.0,
+                    "recent_form": recent_form,
+                    "wc_experience": wc_experience,
+                    "squad_value": squad_value,
+                    "opponent_strength": opponent_strength,
+                    "tournament_history": tournament_history,
                 }
             )
 
